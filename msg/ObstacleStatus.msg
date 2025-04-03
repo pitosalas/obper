@@ -1,0 +1,9 @@
+bool front_blocked
+bool left_blocked
+bool right_blocked
+bool back_blocked
+string recommended_direction
+float32 front_distance
+float32 left_distance
+float32 right_distance
+float32 back_distance
