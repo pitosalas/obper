@@ -1,4 +1,3 @@
-import rclpy
 from rclpy.node import Node
 from nav2_msgs.msg import Costmap
 

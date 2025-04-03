@@ -1,0 +1,6 @@
+launch:
+  - node:
+      package: obstacle_perception
+      executable: perception_node
+      name: obstacle_perception_node
+      output: screen
