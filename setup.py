@@ -16,10 +16,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='you',
-    maintainer_email='you@example.com',
+    maintainer='Pito Salas',  # Change this to your name
+    maintainer_email='pitosalas@gmail.com',
     description='Obstacle perception using costmap and beam checking.',
-    license='Apache License 2.0',
+    license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
