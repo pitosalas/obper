@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from obstacle_perception.costmap_client import CostmapClient
 from obstacle_perception.beam_checker import BeamChecker
-from obstacle_perception.msg import ObstacleStatus
+from dome_interfaces.msg import ObstacleStatus
 import math
 
 class ObstaclePerceptionNode(Node):
