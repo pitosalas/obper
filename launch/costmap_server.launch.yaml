@@ -1,0 +1,7 @@
+launch:
+  - node:
+      pkg: nav2_costmap_2d
+      exec: costmap_2d_node
+      name: local_costmap
+      output: screen
+      include: "$(find-pkg-share obstacle_perception/config/local_costmap_params.yaml)"
