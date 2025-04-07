@@ -1,0 +1,51 @@
+running egg_info
+creating build/obstacle_perception/obstacle_perception.egg-info
+writing build/obstacle_perception/obstacle_perception.egg-info/PKG-INFO
+writing dependency_links to build/obstacle_perception/obstacle_perception.egg-info/dependency_links.txt
+writing entry points to build/obstacle_perception/obstacle_perception.egg-info/entry_points.txt
+writing requirements to build/obstacle_perception/obstacle_perception.egg-info/requires.txt
+writing top-level names to build/obstacle_perception/obstacle_perception.egg-info/top_level.txt
+writing manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+reading manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+writing manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception
+copying obstacle_perception/perception_node.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception
+copying obstacle_perception/__init__.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception
+copying obstacle_perception/costmap_client.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception
+copying obstacle_perception/beam_checker.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception
+running install
+running install_lib
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception
+copying /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception/perception_node.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception
+copying /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception/__init__.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception
+copying /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception/costmap_client.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception
+copying /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception/beam_checker.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception
+byte-compiling /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/perception_node.py to perception_node.cpython-312.pyc
+byte-compiling /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__init__.py to __init__.cpython-312.pyc
+byte-compiling /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/costmap_client.py to costmap_client.cpython-312.pyc
+byte-compiling /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/beam_checker.py to beam_checker.cpython-312.pyc
+running install_data
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/ament_index
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/ament_index/resource_index
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/ament_index/resource_index/packages
+copying resource/obstacle_perception -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/ament_index/resource_index/packages
+copying package.xml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/msg
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch
+copying launch/costmap_only.launch.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch
+copying launch/bringup.launch.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch
+copying launch/perception_node.launch.yaml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch
+copying launch/costmap_server.launch.yaml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch
+creating /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/config
+copying config/local_costmap_params.yaml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/config
+copying config/local_costmap.yaml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/config
+running install_egg_info
+Copying build/obstacle_perception/obstacle_perception.egg-info to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info
+running install_scripts
+Installing costmap_client script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+Installing perception_node script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log'

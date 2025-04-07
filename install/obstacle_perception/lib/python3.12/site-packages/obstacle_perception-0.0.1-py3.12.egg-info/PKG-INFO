@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: obstacle-perception
+Version: 0.0.1
+Summary: Obstacle perception using costmap and beam checking.
+Maintainer: Pito Salas
+Maintainer-email: pitosalas@gmail.com
+License: MIT

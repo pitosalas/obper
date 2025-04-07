@@ -1,0 +1,3 @@
+[console_scripts]
+costmap_client = obstacle_perception.costmap_client:main
+perception_node = obstacle_perception.perception_node:main
