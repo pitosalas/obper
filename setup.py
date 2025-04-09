@@ -28,6 +28,8 @@ setup(
         "console_scripts": [
             "perception_node = obstacle_perception.perception_node:main",
             "costmap_client = obstacle_perception.costmap_client:main",
+            "costmap_subscriber = obstacle_perception.costmap_subscriber:main",
+            "beam_checker = obstacle_perception.beam_checker:main",
         ],
     },
 )
