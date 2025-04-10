@@ -20,7 +20,6 @@ class LocalCostmapSubscriber(Node):
             self.costmap_callback,
             10)
         self.subscription  # prevent unused variable warning
-
         self.marker_pub = self.create_publisher(MarkerArray, '/beam_markers', 10)
 
         self.costmap = None
@@ -38,7 +37,7 @@ class LocalCostmapSubscriber(Node):
         self.origin_y = msg.info.origin.position.y
         self.width = msg.info.width
         self.height = msg.info.height
-        self.get_logger().info(f"Received costmap: {self.width}x{self.height}, res={self.resolution}")
+        self.get_logger().debug(f"Received costmap: {self.width}x{self.height}, res={self.resolution}")
 
     def world_to_map(self, x, y):
         if self.resolution is None:
@@ -50,7 +49,7 @@ class LocalCostmapSubscriber(Node):
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
-            self.get_logger().warn(f"World point ({x:.2f}, {y:.2f}) out of bounds.")
+            self.get_logger().debug(f"World({x:.2f}, {y:.2f}) -> Map({i}, {j}) OOB!.")
             return None
 
     def map_to_world(self, i, j):
@@ -62,7 +61,7 @@ class LocalCostmapSubscriber(Node):
             y = self.origin_y + (j + 0.5) * self.resolution
             return (x, y)
         else:
-            self.get_logger().warn(f"Grid index ({i}, {j}) out of bounds.")
+            self.get_logger().debug(f"Grid index ({i}, {j}) out of bounds.")
             return None
 
     def print_costmap(self):
@@ -121,11 +120,11 @@ class LocalCostmapSubscriber(Node):
 
                 result = self.world_to_map(x, y)
                 if result is None:
-                    continue
-
-                i, j = result
-                idx = j * self.width + i
-                cost = self.costmap[idx]
+                    cost = 0
+                else:
+                    i, j = result
+                    idx = j * self.width + i
+                    cost = self.costmap[idx]
 
                 if cost > 50:
                     distance = d
@@ -151,9 +150,11 @@ class LocalCostmapSubscriber(Node):
             marker.header.stamp = now
             marker.ns = "beam_rays"
             marker.id = idx
-            marker.type = Marker.LINE_STRIP
+            marker.type = Marker.ARROW
             marker.action = Marker.ADD
-            marker.scale.x = 0.02
+            marker.scale.x = 0.02  # shaft diameter
+            marker.scale.y = 0.02   # head diameter
+            marker.scale.z = 0.02   # head length
 
             # Green for clear, red for blocked
             if distance < 2.5:
@@ -181,7 +182,7 @@ def main(args=None):
     try:
         def timer_callback():
             if node.costmap:
-                angles = np.linspace(-math.pi/4, math.pi/4, 9)
+                angles = np.linspace(-math.pi/2, math.pi/2, 9)
                 widths = [0.1] * len(angles)
                 distances = node.check_beams(angles, widths)
                 node.publish_beam_markers(angles, distances)
