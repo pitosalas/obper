@@ -17,7 +17,6 @@ class LocalCostmapSubscriber(Node):
     def __init__(self):
         super().__init__('local_costmap_listener')
 
-        # Subscriptions and publishers
         self.subscription = self.create_subscription(
             OccupancyGrid,
             '/local_costmap/costmap',
@@ -27,13 +26,11 @@ class LocalCostmapSubscriber(Node):
         self.marker_pub = self.create_publisher(MarkerArray, '/beam_markers', 10)
         self.beam_pub = self.create_publisher(BeamDistances, '/beam_distances', 10)
 
-        # TF for base_link → odom transform
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.target_frame = "odom"
         self.source_frame = "base_link"
 
-        # Map data
         self.costmap = None
         self.resolution = None
         self.origin_x = None
@@ -71,10 +68,8 @@ class LocalCostmapSubscriber(Node):
     def world_to_map(self, x, y):
         if self.resolution is None:
             return None
-
         i = int((x - self.origin_x) / self.resolution)
         j = int((y - self.origin_y) / self.resolution)
-
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
@@ -83,7 +78,6 @@ class LocalCostmapSubscriber(Node):
     def map_to_world(self, i, j):
         if self.resolution is None:
             return None
-
         if 0 <= i < self.width and 0 <= j < self.height:
             x = self.origin_x + (i + 0.5) * self.resolution
             y = self.origin_y + (j + 0.5) * self.resolution
@@ -143,7 +137,7 @@ class LocalCostmapSubscriber(Node):
 
             marker = Marker()
             marker.header.frame_id = frame_id
-            marker.header.stamp = rclpy.time.Time().to_msg()  # time=0 means "latest available TF"
+            marker.header.stamp = rclpy.time.Time().to_msg()  # ✅ Use time=0
             marker.ns = "beam_rays"
             marker.id = idx
             marker.type = Marker.ARROW
