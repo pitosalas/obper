@@ -8,17 +8,19 @@ from geometry_msgs.msg import Twist, Point
 from visualization_msgs.msg import Marker
 import random
 import math
+from builtin_interfaces.msg import Duration
+
 
 class ExplorerNode(Node):
     def __init__(self):
-        super().__init__('explorer_node')
+        super().__init__("explorer_node")
 
         # Parameters
-        self.clearance_threshold = 0.8   # meters
-        self.stop_threshold = 0.5        # meters
-        self.linear_speed = 1.0          # m/s ← updated here
-        self.angular_scale = 1.5         # rad/s per radian
-        self.max_range = 2.0             # for visualization
+        self.clearance_threshold = 0.8  # meters
+        self.stop_threshold = 0.5  # meters
+        self.linear_speed = 1.0  # m/s ← updated here
+        self.angular_scale = 1.5  # rad/s per radian
+        self.max_range = 2.0  # for visualization
 
         # State
         self.current_beams = None
@@ -26,14 +28,12 @@ class ExplorerNode(Node):
 
         # ROS interfaces
         self.beam_sub = self.create_subscription(
-            BeamDistances,
-            '/beam_distances',
-            self.beam_callback,
-            10
+            BeamDistances, "/beam_distances", self.beam_callback, 10
         )
-        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.marker_pub = self.create_publisher(Marker, '/explorer_direction_marker', 10)
-
+        self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.marker_pub = self.create_publisher(
+            Marker, "/explorer_direction_marker", 10
+        )
         self.timer = self.create_timer(0.2, self.control_loop)
 
     def beam_callback(self, msg):
@@ -45,7 +45,11 @@ class ExplorerNode(Node):
     def pick_random_direction(self):
         if not self.current_beams:
             return None
-        candidates = [angle for angle, dist in self.current_beams if dist > self.clearance_threshold]
+        candidates = [
+            angle
+            for angle, dist in self.current_beams
+            if dist > self.clearance_threshold
+        ]
         if not candidates:
             return None
         return random.choice(candidates)
@@ -57,7 +61,10 @@ class ExplorerNode(Node):
 
         if self.current_direction is not None:
             for angle, dist in self.current_beams:
-                if abs(angle - self.current_direction) < 0.2 and dist < self.stop_threshold:
+                if (
+                    abs(angle - self.current_direction) < 0.2
+                    and dist < self.stop_threshold
+                ):
                     self.get_logger().info("Obstacle ahead — stopping.")
                     self.stop()
                     self.current_direction = None
@@ -82,7 +89,9 @@ class ExplorerNode(Node):
         twist.linear.x = self.linear_speed
         twist.angular.z = self.angular_scale * angle
         self.cmd_vel_pub.publish(twist)
-        self.get_logger().info(f"Publishing cmd_vel: linear.x={twist.linear.x:.2f}, angular.z={twist.angular.z:.2f}")
+        self.get_logger().info(
+            f"Publishing cmd_vel: linear.x={twist.linear.x:.2f}, angular.z={twist.angular.z:.2f}"
+        )
 
     def stop(self):
         self.cmd_vel_pub.publish(Twist())
@@ -95,9 +104,10 @@ class ExplorerNode(Node):
         marker.id = 0
         marker.type = Marker.ARROW
         marker.action = Marker.ADD
-        marker.scale.x = 0.1
+        marker.scale.x = 0.005
         marker.scale.y = 0.02
         marker.scale.z = 0.02
+        marker.lifetime = Duration(sec=1, nanosec=0)
 
         marker.color.r = 0.0
         marker.color.g = 0.0
@@ -108,7 +118,7 @@ class ExplorerNode(Node):
         end = Point(
             x=self.max_range * math.cos(angle),
             y=self.max_range * math.sin(angle),
-            z=0.1
+            z=0.1,
         )
         marker.points = [start, end]
 
@@ -122,5 +132,6 @@ def main(args=None):
     node.destroy_node()
     rclpy.shutdown()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

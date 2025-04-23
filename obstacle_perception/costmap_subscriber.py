@@ -11,6 +11,7 @@ from tf2_ros import Buffer, TransformListener, LookupException, ConnectivityExce
 import tf_transformations
 import math
 import numpy as np
+from builtin_interfaces.msg import Duration
 
 
 class LocalCostmapSubscriber(Node):
@@ -142,10 +143,10 @@ class LocalCostmapSubscriber(Node):
             marker.id = idx
             marker.type = Marker.ARROW
             marker.action = Marker.ADD
-            marker.scale.x = 0.02
+            marker.scale.x = 0.005
             marker.scale.y = 0.02
             marker.scale.z = 0.02
-
+            marker.lifetime = Duration(sec=1, nanosec=0)
             marker.color.r = 1.0 if distance < 2.5 else 0.0
             marker.color.g = 0.0 if distance < 2.5 else 1.0
             marker.color.b = 0.0
