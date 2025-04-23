@@ -17,7 +17,7 @@ setup(
         (os.path.join("share", package_name, "config"), glob("config/*.yaml")),
 
     ],
-    install_requires=["setuptools"],
+    install_requires=["setuptools","robot_msgs"],
     zip_safe=True,
     maintainer="Pito Salas",  # Change this to your name
     maintainer_email="pitosalas@gmail.com",
@@ -30,6 +30,7 @@ setup(
             "costmap_client = obstacle_perception.costmap_client:main",
             "costmap_subscriber = obstacle_perception.costmap_subscriber:main",
             "beam_checker = obstacle_perception.beam_checker:main",
+            "explorer_node = obstacle_perception.explorer_node:main",            
         ],
     },
 )
