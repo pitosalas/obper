@@ -17,5 +17,8 @@ launch/perception_node.launch.yaml
 obstacle_perception/__init__.py
 obstacle_perception/beam_checker.py
 obstacle_perception/costmap_client.py
+obstacle_perception/costmap_subscriber.py
+obstacle_perception/explorer_node.py
+obstacle_perception/explorer_node_old.py
 obstacle_perception/perception_node.py
 resource/obstacle_perception

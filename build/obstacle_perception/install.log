@@ -1,7 +1,13 @@
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/explorer_node_old.py
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/costmap_subscriber.py
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/explorer_node.py
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/perception_node.py
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__init__.py
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/costmap_client.py
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/beam_checker.py
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__pycache__/explorer_node_old.cpython-312.pyc
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__pycache__/costmap_subscriber.cpython-312.pyc
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__pycache__/explorer_node.cpython-312.pyc
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__pycache__/perception_node.cpython-312.pyc
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__pycache__/__init__.cpython-312.pyc
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/__pycache__/costmap_client.cpython-312.pyc
@@ -22,5 +28,8 @@
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info/entry_points.txt
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info/requires.txt
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info/dependency_links.txt
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception/beam_checker
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception/costmap_client
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception/costmap_subscriber
+/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception/explorer_node
 /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception/perception_node
