@@ -26,10 +26,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "perception_node = obstacle_perception.perception_node:main",
-            "costmap_client = obstacle_perception.costmap_client:main",
             "costmap_subscriber = obstacle_perception.costmap_subscriber:main",
-            "beam_checker = obstacle_perception.beam_checker:main",
             "explorer_node = obstacle_perception.explorer_node:main",
             "explore_purposeful = obstacle_perception.explore_purposeful:main",
         ],
