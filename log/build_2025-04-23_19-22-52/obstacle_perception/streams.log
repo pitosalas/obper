@@ -1,0 +1,26 @@
+[5.147s] Invoking command in '/home/pitosalas/linorobot2_ws/src/obstacle_perception': PYTHONPATH=/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/obstacle_perception build --build-base /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build install --record /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log --single-version-externally-managed install_data
+[6.857s] running egg_info
+[7.032s] writing build/obstacle_perception/obstacle_perception.egg-info/PKG-INFO
+[7.035s] writing dependency_links to build/obstacle_perception/obstacle_perception.egg-info/dependency_links.txt
+[7.037s] writing entry points to build/obstacle_perception/obstacle_perception.egg-info/entry_points.txt
+[7.037s] writing requirements to build/obstacle_perception/obstacle_perception.egg-info/requires.txt
+[7.038s] writing top-level names to build/obstacle_perception/obstacle_perception.egg-info/top_level.txt
+[7.331s] reading manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+[7.335s] writing manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+[7.336s] running build
+[7.336s] running build_py
+[7.340s] running install
+[7.367s] running install_lib
+[7.533s] running install_data
+[7.535s] running install_egg_info
+[7.680s] removing '/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info' (and everything under it)
+[7.684s] Copying build/obstacle_perception/obstacle_perception.egg-info to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info
+[7.696s] running install_scripts
+[8.716s] Installing beam_checker script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[8.718s] Installing costmap_client script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[8.718s] Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[8.719s] Installing explore_purposeful script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[8.720s] Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[8.721s] Installing perception_node script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[8.723s] writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log'
+[8.889s] Invoked command in '/home/pitosalas/linorobot2_ws/src/obstacle_perception' returned '0': PYTHONPATH=/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/obstacle_perception build --build-base /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build install --record /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log --single-version-externally-managed install_data

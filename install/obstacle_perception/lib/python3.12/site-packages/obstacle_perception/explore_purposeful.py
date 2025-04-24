@@ -32,6 +32,7 @@ from robot_msgs.msg import BeamDistances
 from visualization_msgs.msg import Marker, MarkerArray
 from tf2_ros import Buffer, TransformListener
 from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
+from builtin_interfaces.msg import Duration
 import numpy as np
 import math
 
@@ -42,8 +43,8 @@ class ExplorePurposeful(Node):
         # Parameters
         self.grid_resolution = 0.25  # meters per cell
         self.grid_size = 100  # 100x100 grid → 25m x 25m
-        self.linear_speed = 2.0
-        self.angular_speed = 1.5
+        self.linear_speed = 0.4
+        self.angular_speed = 0.8
         self.goal_tolerance = 0.3
 
         # State
@@ -63,7 +64,6 @@ class ExplorePurposeful(Node):
         self.timer = self.create_timer(0.2, self.control_loop)
 
     def beam_callback(self, msg):
-        self.get_logger().info(f"State: {self.current_state}")
         self.current_beams = list(zip(msg.angles, msg.distances))
         if self.current_state == 'IDLE' and self.current_beams:
             self.select_new_goal()
@@ -86,23 +86,14 @@ class ExplorePurposeful(Node):
             q = trans.transform.rotation
             yaw = math.atan2(2.0 * (q.w * q.z + q.x * q.y), 1.0 - 2.0 * (q.y*q.y + q.z*q.z))
             return (t.x, t.y, yaw)
-        except (LookupException, ConnectivityException, ExtrapolationException) as e:
-            self.get_logger().warn(f"TF lookup failed: {type(e).__name__}")
+        except (LookupException, ConnectivityException, ExtrapolationException):
+            self.get_logger().warn("TF lookup failed.")
             return None
-
-    def publish_twist(self, linear_x, angular_z):
-        twist = Twist()
-        twist.linear.x = linear_x
-        twist.angular.z = angular_z
-        self.cmd_pub.publish(twist)
-        self.get_logger().info(f"Publishing cmd_vel: linear.x={linear_x:.2f}, angular.z={angular_z:.2f}")
 
     def control_loop(self):
         pose = self.get_robot_pose()
         if pose is None:
             return
-
-        self.get_logger().info(f"Control loop | State: {self.current_state} | x={pose[0]:.2f}, y={pose[1]:.2f}")
 
         self.update_visited_map(pose[0], pose[1])
         self.publish_visited_cells()
@@ -112,21 +103,26 @@ class ExplorePurposeful(Node):
             angle_diff = self.normalize_angle(angle_to_goal - pose[2])
             if abs(angle_diff) < 0.1:
                 self.current_state = 'DRIVING'
-                self.publish_twist(0.0, 0.0)
+                self.cmd_pub.publish(Twist())
             else:
-                self.publish_twist(0.0, self.angular_speed * np.sign(angle_diff))
+                twist = Twist()
+                twist.angular.z = self.angular_speed * np.sign(angle_diff)
+                self.cmd_pub.publish(twist)
 
         elif self.current_state == 'DRIVING':
             dx = self.goal_point[0] - pose[0]
             dy = self.goal_point[1] - pose[1]
             dist = math.hypot(dx, dy)
             if dist < self.goal_tolerance:
-                self.publish_twist(0.0, 0.0)
+                self.cmd_pub.publish(Twist())
                 self.current_state = 'IDLE'
             else:
+                twist = Twist()
+                twist.linear.x = self.linear_speed
                 angle_to_goal = math.atan2(dy, dx)
                 angle_diff = self.normalize_angle(angle_to_goal - pose[2])
-                self.publish_twist(self.linear_speed, self.angular_speed * angle_diff)
+                twist.angular.z = self.angular_speed * angle_diff
+                self.cmd_pub.publish(twist)
 
     def update_visited_map(self, x, y):
         cx = int((x + (self.grid_size * self.grid_resolution) / 2) / self.grid_resolution)
@@ -135,7 +131,6 @@ class ExplorePurposeful(Node):
             self.visited_map[cy, cx] = 1
 
     def publish_visited_cells(self):
-        marker_array = MarkerArray()
         marker = Marker()
         marker.header.frame_id = 'odom'
         marker.header.stamp = self.get_clock().now().to_msg()
@@ -161,8 +156,7 @@ class ExplorePurposeful(Node):
                     pt.z = 0.01
                     marker.points.append(pt)
 
-        marker_array.markers.append(marker)
-        self.marker_pub.publish(marker_array)
+        self.marker_pub.publish(marker)
 
     @staticmethod
     def normalize_angle(angle):

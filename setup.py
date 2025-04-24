@@ -32,7 +32,6 @@ setup(
             "beam_checker = obstacle_perception.beam_checker:main",
             "explorer_node = obstacle_perception.explorer_node:main",
             "explore_purposeful = obstacle_perception.explore_purposeful:main",
-                        
         ],
     },
 )
