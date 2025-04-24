@@ -2,7 +2,7 @@
 # Authors: Pito Salas and ChatGPT
 # License: MIT
 # File: explore_purposeful.py
-# Version: 1.1
+# Version: 1.2
 # Last revised: 2025-04-24
 
 """
@@ -12,17 +12,12 @@ Purpose:
     rotates toward it, and drives forward until it reaches the goal or detects a new obstacle.
     The behavior is governed by a finite state machine.
 
-Internal Components:
-    - State Machine: States include IDLE, TURNING, and DRIVING.
-    - Goal Selection: Chooses the farthest beam direction and computes a goal in the odom frame.
-    - Visited Grid Map: Tracks visited areas using a 2D matrix in odom space, with 25cm resolution.
-    - Visualization: Publishes a MarkerArray showing visited cells in RViz for monitoring.
-
-Expected Behavior:
-    - Continuously selects new goals from LIDAR beam data.
-    - Turns in place to align with the chosen goal.
-    - Drives forward, updates visited map, and replans if blocked.
-    - Displays visited cells in RViz.
+Key Features:
+    - State Machine: IDLE, TURNING, DRIVING
+    - Goal Selection: Pick farthest visible beam
+    - Visited Map: 2D grid in odom frame
+    - Markers: Visited cells + goal point
+    - CSV-style logging for each control loop
 """
 
 import rclpy
@@ -52,6 +47,7 @@ class ExplorePurposeful(Node):
         self.set_state('IDLE')
         self.goal_point = None
         self.current_beams = []
+        self.loop_count = 0
 
         # TF
         self.tf_buffer = Buffer()
@@ -64,7 +60,6 @@ class ExplorePurposeful(Node):
         self.timer = self.create_timer(0.2, self.control_loop)  # 5 Hz
         self.cmd_timer = self.create_timer(0.05, self.publish_current_twist)  # 20 Hz
 
-        # Current twist command
         self.current_twist = Twist()
 
     def beam_callback(self, msg):
@@ -86,14 +81,14 @@ class ExplorePurposeful(Node):
         y = pose[1] + best_distance * math.sin(pose[2] + best_angle)
         self.goal_point = (x, y)
         self.set_state('TURNING')
-        self.get_logger().info(f"New goal: ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}")
+        self.get_logger().debug(f"New goal: ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}")
 
     def set_state(self, state):
         if state not in ['IDLE', 'TURNING', 'DRIVING']:
-            self.get_logger().warn(f"Invalid state: {state}")
+            self.get_logger().debug(f"Invalid state: {state}")
             return
         self.current_state = state
-        self.get_logger().info(f"State changed to: {self.current_state}")
+        self.get_logger().debug(f"State changed to: {self.current_state}")
 
     def get_robot_pose(self):
         try:
@@ -104,7 +99,7 @@ class ExplorePurposeful(Node):
             yaw = math.atan2(2.0 * (q.w * q.z + q.x * q.y), 1.0 - 2.0 * (q.y*q.y + q.z*q.z))
             return (t.x, t.y, yaw)
         except (LookupException, ConnectivityException, ExtrapolationException) as e:
-            self.get_logger().warn(f"TF lookup failed: {type(e).__name__}")
+            self.get_logger().debug(f"TF lookup failed: {type(e).__name__}")
             return None
 
     def publish_twist(self, linear_x, angular_z):
@@ -120,8 +115,7 @@ class ExplorePurposeful(Node):
         if pose is None:
             return
 
-        self.get_logger().debug(f"Control loop | State: {self.current_state} | x={pose[0]:.2f}, y={pose[1]:.2f}")
-
+        self.loop_count += 1
         self.update_visited_map(pose[0], pose[1])
         self.publish_visited_cells()
 
@@ -129,7 +123,6 @@ class ExplorePurposeful(Node):
             angle_to_goal = math.atan2(self.goal_point[1] - pose[1], self.goal_point[0] - pose[0])
             angle_diff = self.normalize_angle(angle_to_goal - pose[2])
             if abs(angle_diff) < 0.1:
-                self.get_logger().info("seting cmd_vel to zero [1]")
                 self.set_state('DRIVING')
                 self.publish_twist(0.0, 0.0)
             else:
@@ -140,7 +133,6 @@ class ExplorePurposeful(Node):
             dy = self.goal_point[1] - pose[1]
             dist = math.hypot(dx, dy)
             if dist < self.goal_tolerance:
-                self.get_logger().info("seting cmd_vel to zero [2]")
                 self.publish_twist(0.0, 0.0)
                 self.set_state('IDLE')
             else:
@@ -148,6 +140,33 @@ class ExplorePurposeful(Node):
                 angle_diff = self.normalize_angle(angle_to_goal - pose[2])
                 ang_z = np.clip(self.angular_speed * angle_diff, -1.0, 1.0)
                 self.publish_twist(self.linear_speed, ang_z)
+
+        self.log_loop_data(pose)
+
+    def log_loop_data(self, pose):
+        lx = self.current_twist.linear.x
+        az = self.current_twist.angular.z
+        px, py = pose[0], pose[1]
+        gx, gy = self.goal_point if self.goal_point else (None, None)
+        dist = math.hypot(gx - px, gy - py) if self.goal_point else None
+        self.get_logger().info(f"{self.loop_count},{self.current_state},{lx:.2f},{az:.2f},{px:.2f},{py:.2f},{gx:.2f},{gy:.2f},{dist:.2f}")
+
+    def create_marker(self, ns, marker_id, marker_type, r, g, b, a, scale_x, scale_y, scale_z):
+        marker = Marker()
+        marker.header.frame_id = 'odom'
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.ns = ns
+        marker.id = marker_id
+        marker.type = marker_type
+        marker.action = Marker.ADD
+        marker.scale.x = scale_x
+        marker.scale.y = scale_y
+        marker.scale.z = scale_z
+        marker.color.r = r
+        marker.color.g = g
+        marker.color.b = b
+        marker.color.a = a
+        return marker
 
     def update_visited_map(self, x, y):
         cx = int((x + (self.grid_size * self.grid_resolution) / 2) / self.grid_resolution)
@@ -157,20 +176,9 @@ class ExplorePurposeful(Node):
 
     def publish_visited_cells(self):
         marker_array = MarkerArray()
-        marker = Marker()
-        marker.header.frame_id = 'odom'
-        marker.header.stamp = self.get_clock().now().to_msg()
-        marker.ns = 'visited'
-        marker.id = 0
-        marker.type = Marker.CUBE_LIST
-        marker.action = Marker.ADD
-        marker.scale.x = self.grid_resolution
-        marker.scale.y = self.grid_resolution
-        marker.scale.z = 0.01
-        marker.color.r = 0.0
-        marker.color.g = 1.0
-        marker.color.b = 0.0
-        marker.color.a = 0.5
+
+        # Visited cell cubes
+        marker = self.create_marker('visited', 0, Marker.CUBE_LIST, 0.0, 1.0, 0.0, 0.5, self.grid_resolution, self.grid_resolution, 0.01)
         marker.points.clear()
 
         for j in range(self.grid_size):
@@ -183,6 +191,15 @@ class ExplorePurposeful(Node):
                     marker.points.append(pt)
 
         marker_array.markers.append(marker)
+
+        # Goal marker
+        if self.goal_point:
+            goal_marker = self.create_marker('goal', 1, Marker.SPHERE, 1.0, 0.0, 0.0, 1.0, 0.2, 0.2, 0.05)
+            goal_marker.pose.position.x = self.goal_point[0]
+            goal_marker.pose.position.y = self.goal_point[1]
+            goal_marker.pose.position.z = 0.05
+            marker_array.markers.append(goal_marker)
+
         self.marker_pub.publish(marker_array)
 
     @staticmethod
