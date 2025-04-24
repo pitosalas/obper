@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = "obstacle_perception"
+package_name = "obper"
 
 setup(
     name=package_name,
@@ -26,9 +26,9 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "costmap_subscriber = obstacle_perception.costmap_subscriber:main",
-            "explorer_node = obstacle_perception.explorer_node:main",
-            "explore_purposeful = obstacle_perception.explore_purposeful:main",
+            "costmap_subscriber = obper.costmap_subscriber:main",
+            "explorer_node = obper.explorer_node:main",
+            "explore_purposeful = obper.explore_purposeful:main",
         ],
     },
 )

@@ -1,0 +1,146 @@
+[0.000000] (-) TimerEvent: {}
+[0.002908] (obstacle_perception) JobQueued: {'identifier': 'obstacle_perception', 'dependencies': OrderedDict()}
+[0.003247] (obstacle_perception) JobStarted: {'identifier': 'obstacle_perception'}
+[0.098607] (-) TimerEvent: {}
+[0.199923] (-) TimerEvent: {}
+[0.301245] (-) TimerEvent: {}
+[0.406530] (-) TimerEvent: {}
+[0.507984] (-) TimerEvent: {}
+[0.611561] (-) TimerEvent: {}
+[0.715732] (-) TimerEvent: {}
+[0.818365] (-) TimerEvent: {}
+[0.924262] (-) TimerEvent: {}
+[1.025205] (-) TimerEvent: {}
+[1.126756] (-) TimerEvent: {}
+[1.230995] (-) TimerEvent: {}
+[1.334722] (-) TimerEvent: {}
+[1.441123] (-) TimerEvent: {}
+[1.542979] (-) TimerEvent: {}
+[1.646091] (-) TimerEvent: {}
+[1.749439] (-) TimerEvent: {}
+[1.851121] (-) TimerEvent: {}
+[1.955115] (-) TimerEvent: {}
+[2.056058] (-) TimerEvent: {}
+[2.156837] (-) TimerEvent: {}
+[2.258047] (-) TimerEvent: {}
+[2.361106] (-) TimerEvent: {}
+[2.461820] (-) TimerEvent: {}
+[2.563813] (-) TimerEvent: {}
+[2.667103] (-) TimerEvent: {}
+[2.767853] (-) TimerEvent: {}
+[2.868664] (-) TimerEvent: {}
+[2.971098] (-) TimerEvent: {}
+[3.071879] (-) TimerEvent: {}
+[3.174888] (-) TimerEvent: {}
+[3.275670] (-) TimerEvent: {}
+[3.376415] (-) TimerEvent: {}
+[3.478272] (-) TimerEvent: {}
+[3.580068] (-) TimerEvent: {}
+[3.680858] (-) TimerEvent: {}
+[3.783091] (-) TimerEvent: {}
+[3.885366] (-) TimerEvent: {}
+[3.988063] (-) TimerEvent: {}
+[4.089005] (-) TimerEvent: {}
+[4.189736] (-) TimerEvent: {}
+[4.292097] (-) TimerEvent: {}
+[4.393608] (-) TimerEvent: {}
+[4.496241] (-) TimerEvent: {}
+[4.597657] (-) TimerEvent: {}
+[4.700253] (-) TimerEvent: {}
+[4.801331] (-) TimerEvent: {}
+[4.902687] (-) TimerEvent: {}
+[5.003612] (-) TimerEvent: {}
+[5.106229] (-) TimerEvent: {}
+[5.212875] (-) TimerEvent: {}
+[5.314233] (-) TimerEvent: {}
+[5.414852] (-) TimerEvent: {}
+[5.515512] (-) TimerEvent: {}
+[5.618020] (-) TimerEvent: {}
+[5.721725] (-) TimerEvent: {}
+[5.822552] (-) TimerEvent: {}
+[5.923492] (-) TimerEvent: {}
+[6.025873] (-) TimerEvent: {}
+[6.126567] (-) TimerEvent: {}
+[6.229054] (-) TimerEvent: {}
+[6.329710] (-) TimerEvent: {}
+[6.430353] (-) TimerEvent: {}
+[6.531036] (-) TimerEvent: {}
+[6.631688] (-) TimerEvent: {}
+[6.732987] (-) TimerEvent: {}
+[6.833570] (-) TimerEvent: {}
+[6.934345] (-) TimerEvent: {}
+[7.035242] (-) TimerEvent: {}
+[7.136079] (-) TimerEvent: {}
+[7.237378] (-) TimerEvent: {}
+[7.338222] (-) TimerEvent: {}
+[7.439555] (-) TimerEvent: {}
+[7.497515] (obstacle_perception) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', 'build/obstacle_perception', 'build', '--build-base', '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build', 'install', '--record', '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/pitosalas/linorobot2_ws/src/obstacle_perception', 'env': {'LINOROBOT2_BASE': '2wd', 'TMUX': '/tmp/tmux-1000/default,1693,1', 'USER': 'pitosalas', 'SSH_CLIENT': '192.168.5.76 65175 22', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'ROS_PACKAGE_PATH': '/home/pitosalas/linorobot2_ws/install/robot_msgs/share', 'XDG_SESSION_TYPE': 'tty', 'MCFLY_HISTFILE': '/home/pitosalas/.bash_history', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/home/pitosalas/linorobot2_ws/install/robot_msgs/lib:/home/pitosalas/linorobot2_ws/install/dome_interfaces/lib:/home/pitosalas/uros_ws/install/micro_ros_agent/lib:/home/pitosalas/uros_ws/install/micro_ros_msgs/lib:/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/pitosalas', 'MCFLY_HISTORY': '/tmp/mcfly.fROEFOpf', 'OLDPWD': '/home/pitosalas', 'TERM_PROGRAM_VERSION': '3.4', 'SSH_TTY': '/dev/pts/0', 'ROS_PYTHON_VERSION': '3', 'PS1': '[\\h:\\w]', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'LC_TERMINAL_VERSION': '3.5.13', 'COLCON_PREFIX_PATH': '/home/pitosalas/linorobot2_ws/install:/home/pitosalas/uros_ws/install', 'ROS_DISTRO': 'jazzy', 'MCFLY_LIGHT': 'TRUE', 'LOGNAME': 'pitosalas', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PKG_CONFIG_PATH': '/home/pitosalas/linorobot2_ws/install/robot_msgs/lib/aarch64-linux-gnu/pkgconfig:/home/pitosalas/linorobot2_ws/install/robot_msgs/lib/pkgconfig', 'XDG_SESSION_CLASS': 'user', 'TERM': 'tmux-256color', 'XDG_SESSION_ID': '2', 'HISTCONTROL': 'ignorespace', 'PATH': '/home/pitosalas/.local/bin:/home/pitosalas/.local/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/pitosalas/.local/bin:/home/pitosalas/.platformio/penv/bin:/home/pitosalas/.local/bin:/home/pitosalas/.platformio/penv/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'LANG': 'en_US.UTF-8', 'TERM_PROGRAM': 'tmux', 'AMENT_PREFIX_PATH': '/home/pitosalas/linorobot2_ws/install/status_panel:/home/pitosalas/linorobot2_ws/install/obstacle_perception:/home/pitosalas/linorobot2_ws/install/nav_tools:/home/pitosalas/linorobot2_ws/install/micro_ros_setup:/home/pitosalas/linorobot2_ws/install/linorobot2_navigation:/home/pitosalas/linorobot2_ws/install/linorobot2_gazebo:/home/pitosalas/linorobot2_ws/install/dome:/home/pitosalas/linorobot2_ws/install/linorobot2_description:/home/pitosalas/linorobot2_ws/install/linorobot2_bringup:/home/pitosalas/linorobot2_ws/install/linorobot2_base:/home/pitosalas/linorobot2_ws/install/linorobot2:/home/pitosalas/linorobot2_ws/install/lib_ros_examples:/home/pitosalas/linorobot2_ws/install/imu_calib:/home/pitosalas/linorobot2_ws/install/hls_lfcd_lds_driver:/home/pitosalas/linorobot2_ws/install/dome_interfaces:/home/pitosalas/uros_ws/install/micro_ros_agent:/home/pitosalas/uros_ws/install/micro_ros_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LC_TERMINAL': 'iTerm2', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception', 'MCFLY_SESSION_ID': 'nRbXx94IRJN2C0S3UIbz7aMi', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '192.168.5.76 49528 192.168.5.118 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'LINOROBOT2_DEPTH_SENSOR': '', 'PYTHONPATH': '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/status_panel/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/obstacle_perception/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/robot_msgs/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/linorobot2_gazebo/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/dome/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/lib_ros_examples/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/dome_interfaces/lib/python3.12/site-packages:/home/pitosalas/uros_ws/install/micro_ros_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'LINOROBOT2_LASER_SENSOR': '', 'TMUX_PANE': '%6', 'CMAKE_PREFIX_PATH': '/home/pitosalas/linorobot2_ws/install/robot_msgs:/home/pitosalas/linorobot2_ws/install/nav_tools:/home/pitosalas/linorobot2_ws/install/micro_ros_setup:/home/pitosalas/linorobot2_ws/install/linorobot2_navigation:/home/pitosalas/linorobot2_ws/install/linorobot2_gazebo:/home/pitosalas/linorobot2_ws/install/linorobot2_description:/home/pitosalas/linorobot2_ws/install/linorobot2_bringup:/home/pitosalas/linorobot2_ws/install/linorobot2_base:/home/pitosalas/linorobot2_ws/install/linorobot2:/home/pitosalas/linorobot2_ws/install/imu_calib:/home/pitosalas/linorobot2_ws/install/hls_lfcd_lds_driver:/home/pitosalas/linorobot2_ws/install/dome_interfaces:/home/pitosalas/uros_ws/install/micro_ros_agent:/home/pitosalas/uros_ws/install/micro_ros_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'ROS2_WS': 'linorobot2_ws'}, 'shell': False}
+[7.539709] (-) TimerEvent: {}
+[7.641160] (-) TimerEvent: {}
+[7.745092] (-) TimerEvent: {}
+[7.845866] (-) TimerEvent: {}
+[7.946787] (-) TimerEvent: {}
+[8.049191] (-) TimerEvent: {}
+[8.151242] (-) TimerEvent: {}
+[8.252575] (-) TimerEvent: {}
+[8.353213] (-) TimerEvent: {}
+[8.453820] (-) TimerEvent: {}
+[8.554503] (-) TimerEvent: {}
+[8.655137] (-) TimerEvent: {}
+[8.755715] (-) TimerEvent: {}
+[8.857900] (-) TimerEvent: {}
+[8.958993] (-) TimerEvent: {}
+[9.059724] (-) TimerEvent: {}
+[9.160392] (-) TimerEvent: {}
+[9.261061] (-) TimerEvent: {}
+[9.363264] (-) TimerEvent: {}
+[9.464164] (-) TimerEvent: {}
+[9.481782] (obstacle_perception) StdoutLine: {'line': b'running egg_info\n'}
+[9.564345] (-) TimerEvent: {}
+[9.634135] (obstacle_perception) StdoutLine: {'line': b'writing build/obstacle_perception/obstacle_perception.egg-info/PKG-INFO\n'}
+[9.635980] (obstacle_perception) StdoutLine: {'line': b'writing dependency_links to build/obstacle_perception/obstacle_perception.egg-info/dependency_links.txt\n'}
+[9.637371] (obstacle_perception) StdoutLine: {'line': b'writing entry points to build/obstacle_perception/obstacle_perception.egg-info/entry_points.txt\n'}
+[9.639042] (obstacle_perception) StdoutLine: {'line': b'writing requirements to build/obstacle_perception/obstacle_perception.egg-info/requires.txt\n'}
+[9.639832] (obstacle_perception) StdoutLine: {'line': b'writing top-level names to build/obstacle_perception/obstacle_perception.egg-info/top_level.txt\n'}
+[9.664626] (-) TimerEvent: {}
+[9.765449] (-) TimerEvent: {}
+[9.866579] (-) TimerEvent: {}
+[9.938137] (obstacle_perception) StdoutLine: {'line': b"reading manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'\n"}
+[9.944437] (obstacle_perception) StdoutLine: {'line': b"writing manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'\n"}
+[9.945371] (obstacle_perception) StdoutLine: {'line': b'running build\n'}
+[9.945784] (obstacle_perception) StdoutLine: {'line': b'running build_py\n'}
+[9.951573] (obstacle_perception) StdoutLine: {'line': b'copying obstacle_perception/explore_purposeful.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception\n'}
+[9.952350] (obstacle_perception) StdoutLine: {'line': b'running install\n'}
+[9.966759] (-) TimerEvent: {}
+[9.975592] (obstacle_perception) StdoutLine: {'line': b'running install_lib\n'}
+[10.067000] (-) TimerEvent: {}
+[10.130088] (obstacle_perception) StdoutLine: {'line': b'copying /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception/explore_purposeful.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception\n'}
+[10.135340] (obstacle_perception) StdoutLine: {'line': b'byte-compiling /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/explore_purposeful.py to explore_purposeful.cpython-312.pyc\n'}
+[10.146464] (obstacle_perception) StdoutLine: {'line': b'running install_data\n'}
+[10.147806] (obstacle_perception) StdoutLine: {'line': b'copying launch/bringup.yaml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch\n'}
+[10.149390] (obstacle_perception) StdoutLine: {'line': b'running install_egg_info\n'}
+[10.167167] (-) TimerEvent: {}
+[10.269475] (-) TimerEvent: {}
+[10.306208] (obstacle_perception) StdoutLine: {'line': b"removing '/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info' (and everything under it)\n"}
+[10.309369] (obstacle_perception) StdoutLine: {'line': b'Copying build/obstacle_perception/obstacle_perception.egg-info to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info\n'}
+[10.318101] (obstacle_perception) StdoutLine: {'line': b'running install_scripts\n'}
+[10.369992] (-) TimerEvent: {}
+[10.471690] (-) TimerEvent: {}
+[10.572341] (-) TimerEvent: {}
+[10.672971] (-) TimerEvent: {}
+[10.773562] (-) TimerEvent: {}
+[10.875045] (-) TimerEvent: {}
+[10.975640] (-) TimerEvent: {}
+[11.076287] (-) TimerEvent: {}
+[11.177010] (-) TimerEvent: {}
+[11.279871] (-) TimerEvent: {}
+[11.348530] (obstacle_perception) StdoutLine: {'line': b'Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception\n'}
+[11.350527] (obstacle_perception) StdoutLine: {'line': b'Installing explore_purposeful script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception\n'}
+[11.353646] (obstacle_perception) StdoutLine: {'line': b'Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception\n'}
+[11.360519] (obstacle_perception) StdoutLine: {'line': b"writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log'\n"}
+[11.380254] (-) TimerEvent: {}
+[11.481469] (-) TimerEvent: {}
+[11.520204] (obstacle_perception) CommandEnded: {'returncode': 0}
+[11.582064] (obstacle_perception) JobEnded: {'identifier': 'obstacle_perception', 'rc': 0}
+[11.589872] (-) TimerEvent: {}
+[11.590306] (-) EventReactorShutdown: {}

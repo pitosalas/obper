@@ -10,16 +10,9 @@ build/obstacle_perception/obstacle_perception.egg-info/top_level.txt
 build/obstacle_perception/obstacle_perception.egg-info/zip-safe
 config/local_costmap.yaml
 config/local_costmap_params.yaml
-launch/bringup.launch.py
-launch/costmap_only.launch.py
-launch/costmap_server.launch.yaml
-launch/perception_node.launch.yaml
+launch/bringup.yaml
 obstacle_perception/__init__.py
-obstacle_perception/beam_checker.py
-obstacle_perception/costmap_client.py
 obstacle_perception/costmap_subscriber.py
 obstacle_perception/explore_purposeful.py
 obstacle_perception/explorer_node.py
-obstacle_perception/explorer_node_old.py
-obstacle_perception/perception_node.py
 resource/obstacle_perception

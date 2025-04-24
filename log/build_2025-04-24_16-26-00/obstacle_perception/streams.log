@@ -1,0 +1,27 @@
+[7.505s] Invoking command in '/home/pitosalas/linorobot2_ws/src/obstacle_perception': PS1=[\h:\w] PYTHONPATH=/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/obstacle_perception build --build-base /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build install --record /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log --single-version-externally-managed install_data
+[9.482s] running egg_info
+[9.631s] writing build/obstacle_perception/obstacle_perception.egg-info/PKG-INFO
+[9.634s] writing dependency_links to build/obstacle_perception/obstacle_perception.egg-info/dependency_links.txt
+[9.635s] writing entry points to build/obstacle_perception/obstacle_perception.egg-info/entry_points.txt
+[9.636s] writing requirements to build/obstacle_perception/obstacle_perception.egg-info/requires.txt
+[9.637s] writing top-level names to build/obstacle_perception/obstacle_perception.egg-info/top_level.txt
+[9.935s] reading manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+[9.942s] writing manifest file 'build/obstacle_perception/obstacle_perception.egg-info/SOURCES.txt'
+[9.942s] running build
+[9.943s] running build_py
+[9.949s] copying obstacle_perception/explore_purposeful.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception
+[9.949s] running install
+[9.973s] running install_lib
+[10.127s] copying /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build/lib/obstacle_perception/explore_purposeful.py -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception
+[10.133s] byte-compiling /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception/explore_purposeful.py to explore_purposeful.cpython-312.pyc
+[10.144s] running install_data
+[10.145s] copying launch/bringup.yaml -> /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/share/obstacle_perception/launch
+[10.147s] running install_egg_info
+[10.303s] removing '/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info' (and everything under it)
+[10.307s] Copying build/obstacle_perception/obstacle_perception.egg-info to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages/obstacle_perception-0.0.1-py3.12.egg-info
+[10.317s] running install_scripts
+[11.346s] Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[11.348s] Installing explore_purposeful script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[11.355s] Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/obstacle_perception
+[11.358s] writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log'
+[11.518s] Invoked command in '/home/pitosalas/linorobot2_ws/src/obstacle_perception' returned '0': PS1=[\h:\w] PYTHONPATH=/home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obstacle_perception/install/obstacle_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/obstacle_perception build --build-base /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/build install --record /home/pitosalas/linorobot2_ws/src/obstacle_perception/build/obstacle_perception/install.log --single-version-externally-managed install_data

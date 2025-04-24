@@ -1,7 +1,4 @@
 [console_scripts]
-beam_checker = obstacle_perception.beam_checker:main
-costmap_client = obstacle_perception.costmap_client:main
 costmap_subscriber = obstacle_perception.costmap_subscriber:main
 explore_purposeful = obstacle_perception.explore_purposeful:main
 explorer_node = obstacle_perception.explorer_node:main
-perception_node = obstacle_perception.perception_node:main
