@@ -1,12 +1,11 @@
 # File: launch_exploration_stack.yaml
 # MIT License
 # Authors: Pito Salas and ChatGPT
-
 launch:
   - arg:
       name: 'explore'
       default: 'false'
-      description: 'explorer node?'
+      description: 'explorer node'
   - node:
       pkg: nav_tools
       exec: costmap_node
@@ -19,9 +18,9 @@ launch:
       exec: costmap_subscriber
       name: costmap_subscriber
       output: screen
-   - node:
-        pkg: obstacle_perception
-        exec: explorer_purposeful
-        name: explorer_purseful
-        output: screen
-        if: "$(var explore)"
+  - node:
+      pkg: obstacle_perception
+      exec: explorer_purposeful
+      name: explorer_purseful
+      output: screen
+      if: "$(var explore)"

@@ -28,7 +28,7 @@ setup(
         "console_scripts": [
             "costmap_subscriber = obper.costmap_subscriber:main",
             "explorer_node = obper.explorer_node:main",
-            "explore_purposeful = obper.explore_purposeful:main",
+            "explore2 = obper.explore2:main",
         ],
     },
 )
