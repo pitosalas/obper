@@ -22,11 +22,13 @@ Key Features:
 
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist, Point
+from geometry_msgs.msg import Twist
 from robot_msgs.msg import BeamDistances
-from visualization_msgs.msg import Marker, MarkerArray
+from visualization_msgs.msg import Marker
 from tf2_ros import Buffer, TransformListener
 from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
+from std_msgs.msg import ColorRGBA
+from geometry_msgs.msg import Vector3
 import numpy as np
 import math
 import random
@@ -59,7 +61,7 @@ class Explore2(Node):
             BeamDistances, "/beam_distances", self.beam_callback, 10
         )
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
-        self.marker_pub = self.create_publisher(MarkerArray, "/visited_cells", 10)
+        self.marker_pub = self.create_publisher(Marker, "/markers", 10)
         self.timer = self.create_timer(0.2, self.control_loop)  # 5 Hz
         self.cmd_timer = self.create_timer(0.05, self.publish_current_twist)  # 20 Hz
 
@@ -84,7 +86,7 @@ class Explore2(Node):
         y = pose[1] + best_distance * math.sin(pose[2] + best_angle)
         self.goal_point = (x, y)
         self.set_state("TURN")
-        self.get_logger().debug(
+        self.get_logger().info(
             f"New goal: ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}"
         )
 
@@ -117,7 +119,8 @@ class Explore2(Node):
         )
 
     def publish_current_twist(self):
-        self.cmd_pub.publish(self.current_twist)
+        pass
+        #self.cmd_pub.publish(self.current_twist)
 
     def control_loop(self):
         pose = self.get_robot_pose()
@@ -168,8 +171,7 @@ class Explore2(Node):
         )
 
     def create_marker(
-        self, ns, marker_id, marker_type, r, g, b, a, scale_x, scale_y, scale_z
-    ):
+        self, ns, marker_id, marker_type, color: ColorRGBA, scale: Vector3):
         marker = Marker()
         marker.header.frame_id = "odom"
         marker.header.stamp = self.get_clock().now().to_msg()
@@ -177,13 +179,8 @@ class Explore2(Node):
         marker.id = marker_id
         marker.type = marker_type
         marker.action = Marker.ADD
-        marker.scale.x = scale_x
-        marker.scale.y = scale_y
-        marker.scale.z = scale_z
-        marker.color.r = r
-        marker.color.g = g
-        marker.color.b = b
-        marker.color.a = a
+        marker.scale = scale     
+        marker.color = color      
         return marker
 
     def update_visited_map(self, x, y):
@@ -197,21 +194,14 @@ class Explore2(Node):
             self.visited_map[cy, cx] = 1
 
     def publish_visited_cells(self):
-        marker_array = MarkerArray()
+        marker_array = Marker()
 
         # Visited cell cubes
         marker = self.create_marker(
-            "visited",
-            0,
-            Marker.CUBE_LIST,
-            0.0,
-            1.0,
-            0.0,
-            1.0,
-            self.grid_resolution,
-            self.grid_resolution,
-            0.1,
-        )
+            "visited", 0,Marker.CUBE_LIST,
+            ColorRGBA(0.0, 1.0, 0.0, 0.5),
+            Vector3(self.grid_resolution, self.grid_resolution, 0.1),
+            0.1)
         marker.points.clear()
 
         # for j in range(self.grid_size):
@@ -228,7 +218,7 @@ class Explore2(Node):
         # Goal marker
         if self.goal_point:
             goal_marker = self.create_marker(
-                "goal", 1, Marker.SPHERE, 1.0, 0.0, 0.0, 1.0, 0.2, 0.2, 0.05
+                "goal", 1, Marker.SPHERE, ColorRGBA(1.0, 0.0, 0.0, 1.0), Vector3(0.2, 0.2, 0.05)
             )
             goal_marker.pose.position.x = self.goal_point[0]
             goal_marker.pose.position.y = self.goal_point[1]
