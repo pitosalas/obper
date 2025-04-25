@@ -29,10 +29,11 @@ from tf2_ros import Buffer, TransformListener
 from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Point
 import numpy as np
 import math
 import random
-
+import logging
 
 class Explore2(Node):
     def __init__(self):
@@ -61,11 +62,18 @@ class Explore2(Node):
             BeamDistances, "/beam_distances", self.beam_callback, 10
         )
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
-        self.marker_pub = self.create_publisher(Marker, "/markers", 10)
+        self.occ_marker = self.create_publisher(Marker, "/occupancy", 10)
+        self.goal_marker = self.create_publisher(Marker, "/goal", 10)     
+
         self.timer = self.create_timer(0.2, self.control_loop)  # 5 Hz
         self.cmd_timer = self.create_timer(0.05, self.publish_current_twist)  # 20 Hz
-
         self.current_twist = Twist()
+
+        # Compact format, include ALL levels (DEBUG and above)
+        logging.basicConfig(
+            format='[%(levelname)s] %(message)s',
+            level=logging.DEBUG  # <== Important: allow DEBUG, INFO, WARN, ERROR
+        )
 
     def beam_callback(self, msg):
         self.get_logger().debug(f"State: {self.current_state}")
@@ -120,7 +128,7 @@ class Explore2(Node):
 
     def publish_current_twist(self):
         pass
-        #self.cmd_pub.publish(self.current_twist)
+        self.cmd_pub.publish(self.current_twist)
 
     def control_loop(self):
         pose = self.get_robot_pose()
@@ -130,6 +138,7 @@ class Explore2(Node):
         self.loop_count += 1
         self.update_visited_map(pose[0], pose[1])
         self.publish_visited_cells()
+        self.publish_goal_marker()
 
         if self.current_state == "TURN":
             angle_to_goal = math.atan2(
@@ -194,15 +203,11 @@ class Explore2(Node):
             self.visited_map[cy, cx] = 1
 
     def publish_visited_cells(self):
-        marker_array = Marker()
+        marker = self.create_marker(    
+            "visited", 0, Marker.CUBE_LIST,
+            ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
+            Vector3(x=self.grid_resolution, y=self.grid_resolution, z=0.1))
 
-        # Visited cell cubes
-        marker = self.create_marker(
-            "visited", 0,Marker.CUBE_LIST,
-            ColorRGBA(0.0, 1.0, 0.0, 0.5),
-            Vector3(self.grid_resolution, self.grid_resolution, 0.1),
-            0.1)
-        marker.points.clear()
 
         # for j in range(self.grid_size):
         #     for i in range(self.grid_size):
@@ -215,22 +220,22 @@ class Explore2(Node):
 
         # marker_array.markers.append(marker)
 
-        # Goal marker
-        if self.goal_point:
-            goal_marker = self.create_marker(
-                "goal", 1, Marker.SPHERE, ColorRGBA(1.0, 0.0, 0.0, 1.0), Vector3(0.2, 0.2, 0.05)
-            )
-            goal_marker.pose.position.x = self.goal_point[0]
-            goal_marker.pose.position.y = self.goal_point[1]
-            goal_marker.pose.position.z = 0.05
-            marker_array.markers.append(goal_marker)
-
-        self.marker_pub.publish(marker_array)
+    def publish_goal_marker(self):
+        if self.goal_point is None:
+            return
+        marker = self.create_marker(
+            "goal", 1, Marker.SPHERE,
+            ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
+            Vector3(x=0.1, y=0.1, z=0.1)
+        )
+        marker.pose.position.x = self.goal_point[0]
+        marker.pose.position.y = self.goal_point[1]
+        marker.pose.position.z = 0.0
+        self.goal_marker.publish(marker)
 
     @staticmethod
     def normalize_angle(angle):
         return math.atan2(math.sin(angle), math.cos(angle))
-
 
 def main(args=None):
     rclpy.init(args=args)
