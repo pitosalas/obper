@@ -14,12 +14,12 @@ launch:
       param:
         - from: "/home/pitosalas/linorobot2_ws/src/nav_tools/config/costmap_params.yaml"
   - node:
-      pkg: obstacle_perception
+      pkg: obper
       exec: costmap_subscriber
       name: costmap_subscriber
       output: screen
   - node:
-      pkg: obstacle_perception
+      pkg: obper
       exec: explorer_purposeful
       name: explorer_purseful
       output: screen

@@ -27,6 +27,7 @@ from robot_msgs.msg import BeamDistances
 from visualization_msgs.msg import Marker
 from tf2_ros import Buffer, TransformListener
 from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
+import tf_transformations
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Point
@@ -49,7 +50,7 @@ class Explore2(Node):
         # State
         self.visited_map = np.zeros((self.grid_size, self.grid_size), dtype=np.uint8)
         self.set_state("IDLE")
-        self.goal_point = None
+        self.goal_point : Point | None = None
         self.current_beams = []
         self.loop_count = 0
 
@@ -90,9 +91,9 @@ class Explore2(Node):
         if pose is None:
             return
 
-        x = pose[0] + best_distance * math.cos(pose[2] + best_angle)
-        y = pose[1] + best_distance * math.sin(pose[2] + best_angle)
-        self.goal_point = (x, y)
+        x = pose.x + best_distance * math.cos(pose.y + best_angle)
+        y = pose.y + best_distance * math.sin(pose.y + best_angle)
+        self.goal_point : Point = Point(x=x, y=y)
         self.set_state("TURN")
         self.get_logger().info(
             f"New goal: ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}"
@@ -105,16 +106,14 @@ class Explore2(Node):
         self.current_state = state
         self.get_logger().debug(f"State changed to: {self.current_state}")
 
-    def get_robot_pose(self):
+    def get_robot_pose(self) -> Point | None:
         try:
             now = rclpy.time.Time()
             trans = self.tf_buffer.lookup_transform("odom", "base_link", now)
             t = trans.transform.translation
             q = trans.transform.rotation
-            yaw = math.atan2(
-                2.0 * (q.w * q.z + q.x * q.y), 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
-            )
-            return (t.x, t.y, yaw)
+            roll, pitch, yaw = tf_transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])            
+            return Point(x=t.x, y=t.y, z=yaw)
         except (LookupException, ConnectivityException, ExtrapolationException) as e:
             self.get_logger().debug(f"TF lookup failed: {type(e).__name__}")
             return None
@@ -126,8 +125,7 @@ class Explore2(Node):
             f"Set cmd_vel: linear.x={linear_x:.2f}, angular.z={angular_z:.2f}"
         )
 
-    def publish_current_twist(self):
-        pass
+    def publish_current_twist(self):    
         self.cmd_pub.publish(self.current_twist)
 
     def control_loop(self):
@@ -136,15 +134,17 @@ class Explore2(Node):
             return
 
         self.loop_count += 1
-        self.update_visited_map(pose[0], pose[1])
+        self.update_visited_map(pose.x, pose.y)
         self.publish_visited_cells()
         self.publish_goal_marker()
 
         if self.current_state == "TURN":
             angle_to_goal = math.atan2(
-                self.goal_point[1] - pose[1], self.goal_point[0] - pose[0]
+                self.goal_point.y - pose.y, self.goal_point.x - pose.x
             )
-            angle_diff = self.normalize_angle(angle_to_goal - pose[2])
+            angle_diff = self.normalize_angle(angle_to_goal - pose.y)
+            print(f"angle to goal: {math.degrees(angle_to_goal):.1f}°, "
+                  f"angle diff: {math.degrees(angle_diff):.1f}°")
             if abs(angle_diff) < 0.1:
                 self.set_state("DRIV")
                 self.publish_twist(0.0, 0.0)
@@ -152,25 +152,33 @@ class Explore2(Node):
                 self.publish_twist(0.0, self.angular_speed * np.sign(angle_diff))
 
         elif self.current_state == "DRIV":
-            dx = self.goal_point[0] - pose[0]
-            dy = self.goal_point[1] - pose[1]
+            dx = self.goal_point.x - pose.x
+            dy = self.goal_point.y - pose.y
             dist = math.hypot(dx, dy)
             if dist < self.goal_tolerance:
                 self.publish_twist(0.0, 0.0)
                 self.set_state("IDLE")
             else:
-                angle_to_goal = math.atan2(dy, dx)
-                angle_diff = self.normalize_angle(angle_to_goal - pose[2])
-                ang_z = np.clip(self.angular_speed * angle_diff, -1.0, 1.0)
-                self.publish_twist(self.linear_speed, ang_z)
+#                angle_to_goal = math.atan2(dy, dx)
+#                angle_diff = self.normalize_angle(angle_to_goal - pose.y)
+#                ang_z = np.clip(self.angular_speed * angle_diff, -1.0, 1.0)
+                self.publish_twist(self.linear_speed, 0,0)
         self.log_loop_data(pose)
 
-    def log_loop_data(self, pose):
+    def log_loop_data(self, pose: Point):
         minf = float("-inf")
         lx = self.current_twist.linear.x
         az = self.current_twist.angular.z
-        px, py = pose[0], pose[1]
-        gx, gy = self.goal_point if self.goal_point else (minf, minf)
+        if pose is None:
+            px, py = minf, minf
+        else:
+            px = pose.x
+            py = pose.y
+        if self.goal_point is None:
+            gx, gy = minf, minf
+        else:
+            gx = self.goal_point.x
+            gy = self.goal_point.y
         current_beam_as_str = ",".join(
             f"{a:.1f}:{d:.1f}" for a, d in self.current_beams
         )
@@ -228,8 +236,8 @@ class Explore2(Node):
             ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
             Vector3(x=0.1, y=0.1, z=0.1)
         )
-        marker.pose.position.x = self.goal_point[0]
-        marker.pose.position.y = self.goal_point[1]
+        marker.pose.position.x = self.goal_point.x
+        marker.pose.position.y = self.goal_point.y
         marker.pose.position.z = 0.0
         self.goal_marker.publish(marker)
 
