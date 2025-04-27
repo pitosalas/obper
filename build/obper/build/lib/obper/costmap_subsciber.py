@@ -6,6 +6,7 @@
 # Version: 1.1
 # Last Revised: 2025-04-27
 
+print("latest  costmap subscriber")
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid

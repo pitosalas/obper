@@ -1,0 +1,26 @@
+[7.691s] Invoking command in '/home/pitosalas/linorobot2_ws/src/obper': PYTHONPATH=/home/pitosalas/linorobot2_ws/src/obper/build/obper/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/obper build --build-base /home/pitosalas/linorobot2_ws/src/obper/build/obper/build install --record /home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log --single-version-externally-managed install_data
+[10.296s] running egg_info
+[10.553s] writing build/obper/obper.egg-info/PKG-INFO
+[10.555s] writing dependency_links to build/obper/obper.egg-info/dependency_links.txt
+[10.557s] writing entry points to build/obper/obper.egg-info/entry_points.txt
+[10.558s] writing requirements to build/obper/obper.egg-info/requires.txt
+[10.560s] writing top-level names to build/obper/obper.egg-info/top_level.txt
+[10.990s] reading manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+[10.994s] writing manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+[10.996s] running build
+[11.002s] running build_py
+[11.006s] copying obper/costmap_subsciber.py -> /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+[11.008s] running install
+[11.034s] running install_lib
+[11.284s] copying /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper/costmap_subsciber.py -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+[11.289s] byte-compiling /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper/costmap_subsciber.py to costmap_subsciber.cpython-312.pyc
+[11.297s] running install_data
+[11.302s] running install_egg_info
+[11.593s] removing '/home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info' (and everything under it)
+[11.596s] Copying build/obper/obper.egg-info to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info
+[11.604s] running install_scripts
+[12.553s] Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+[12.554s] Installing explore2 script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+[12.555s] Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+[12.556s] writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log'
+[12.704s] Invoked command in '/home/pitosalas/linorobot2_ws/src/obper' returned '0': PYTHONPATH=/home/pitosalas/linorobot2_ws/src/obper/build/obper/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/obper build --build-base /home/pitosalas/linorobot2_ws/src/obper/build/obper/build install --record /home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log --single-version-externally-managed install_data

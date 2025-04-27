@@ -1,0 +1,24 @@
+running egg_info
+writing build/obper/obper.egg-info/PKG-INFO
+writing dependency_links to build/obper/obper.egg-info/dependency_links.txt
+writing entry points to build/obper/obper.egg-info/entry_points.txt
+writing requirements to build/obper/obper.egg-info/requires.txt
+writing top-level names to build/obper/obper.egg-info/top_level.txt
+reading manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+writing manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+running build
+running build_py
+copying obper/costmap_subsciber.py -> /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+running install
+running install_lib
+copying /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper/costmap_subsciber.py -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+byte-compiling /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper/costmap_subsciber.py to costmap_subsciber.cpython-312.pyc
+running install_data
+running install_egg_info
+removing '/home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info' (and everything under it)
+Copying build/obper/obper.egg-info to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info
+running install_scripts
+Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+Installing explore2 script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log'

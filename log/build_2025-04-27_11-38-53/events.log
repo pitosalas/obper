@@ -1,0 +1,170 @@
+[0.000000] (-) TimerEvent: {}
+[0.003323] (obper) JobQueued: {'identifier': 'obper', 'dependencies': OrderedDict()}
+[0.004593] (obper) JobStarted: {'identifier': 'obper'}
+[0.099108] (-) TimerEvent: {}
+[0.200126] (-) TimerEvent: {}
+[0.301240] (-) TimerEvent: {}
+[0.402763] (-) TimerEvent: {}
+[0.503866] (-) TimerEvent: {}
+[0.606973] (-) TimerEvent: {}
+[0.708665] (-) TimerEvent: {}
+[0.809773] (-) TimerEvent: {}
+[0.913592] (-) TimerEvent: {}
+[1.014459] (-) TimerEvent: {}
+[1.115219] (-) TimerEvent: {}
+[1.215999] (-) TimerEvent: {}
+[1.317071] (-) TimerEvent: {}
+[1.417847] (-) TimerEvent: {}
+[1.518715] (-) TimerEvent: {}
+[1.619449] (-) TimerEvent: {}
+[1.720155] (-) TimerEvent: {}
+[1.820970] (-) TimerEvent: {}
+[1.922321] (-) TimerEvent: {}
+[2.023776] (-) TimerEvent: {}
+[2.126784] (-) TimerEvent: {}
+[2.228314] (-) TimerEvent: {}
+[2.332306] (-) TimerEvent: {}
+[2.435595] (-) TimerEvent: {}
+[2.536650] (-) TimerEvent: {}
+[2.637691] (-) TimerEvent: {}
+[2.741017] (-) TimerEvent: {}
+[2.842724] (-) TimerEvent: {}
+[2.944505] (-) TimerEvent: {}
+[3.046569] (-) TimerEvent: {}
+[3.148623] (-) TimerEvent: {}
+[3.250284] (-) TimerEvent: {}
+[3.351956] (-) TimerEvent: {}
+[3.453564] (-) TimerEvent: {}
+[3.555644] (-) TimerEvent: {}
+[3.657668] (-) TimerEvent: {}
+[3.760556] (-) TimerEvent: {}
+[3.862299] (-) TimerEvent: {}
+[3.964724] (-) TimerEvent: {}
+[4.065693] (-) TimerEvent: {}
+[4.166570] (-) TimerEvent: {}
+[4.267350] (-) TimerEvent: {}
+[4.368844] (-) TimerEvent: {}
+[4.470513] (-) TimerEvent: {}
+[4.571302] (-) TimerEvent: {}
+[4.672128] (-) TimerEvent: {}
+[4.774469] (-) TimerEvent: {}
+[4.875185] (-) TimerEvent: {}
+[4.976983] (-) TimerEvent: {}
+[5.078107] (-) TimerEvent: {}
+[5.179881] (-) TimerEvent: {}
+[5.281647] (-) TimerEvent: {}
+[5.383977] (-) TimerEvent: {}
+[5.485093] (-) TimerEvent: {}
+[5.586963] (-) TimerEvent: {}
+[5.688507] (-) TimerEvent: {}
+[5.790108] (-) TimerEvent: {}
+[5.891224] (-) TimerEvent: {}
+[5.995138] (-) TimerEvent: {}
+[6.099630] (-) TimerEvent: {}
+[6.200954] (-) TimerEvent: {}
+[6.303577] (-) TimerEvent: {}
+[6.406245] (-) TimerEvent: {}
+[6.507846] (-) TimerEvent: {}
+[6.611327] (-) TimerEvent: {}
+[6.713574] (-) TimerEvent: {}
+[6.815205] (-) TimerEvent: {}
+[6.919982] (-) TimerEvent: {}
+[7.020958] (-) TimerEvent: {}
+[7.123630] (-) TimerEvent: {}
+[7.224472] (-) TimerEvent: {}
+[7.325284] (-) TimerEvent: {}
+[7.430604] (-) TimerEvent: {}
+[7.531657] (-) TimerEvent: {}
+[7.632827] (-) TimerEvent: {}
+[7.736745] (-) TimerEvent: {}
+[7.838519] (-) TimerEvent: {}
+[7.942673] (-) TimerEvent: {}
+[8.032869] (obper) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', 'build/obper', 'build', '--build-base', '/home/pitosalas/linorobot2_ws/src/obper/build/obper/build', 'install', '--record', '/home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/pitosalas/linorobot2_ws/src/obper', 'env': {'LINOROBOT2_BASE': '2wd', 'USER': 'pitosalas', 'SSH_CLIENT': '192.168.5.92 54103 22', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'tty', 'GIT_ASKPASS': '/home/pitosalas/.vscode-server/bin/17baf841131aa23349f217ca7c570c76ee87b957/extensions/git/dist/askpass.sh', 'MCFLY_HISTFILE': '/home/pitosalas/.bash_history', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/home/pitosalas/linorobot2_ws/install/robot_msgs/lib:/home/pitosalas/linorobot2_ws/install/dome_interfaces/lib:/home/pitosalas/uros_ws/install/micro_ros_agent/lib:/home/pitosalas/uros_ws/install/micro_ros_msgs/lib:/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'BROWSER': '/home/pitosalas/.vscode-server/bin/17baf841131aa23349f217ca7c570c76ee87b957/bin/helpers/browser.sh', 'HOME': '/home/pitosalas', 'MCFLY_HISTORY': '/tmp/mcfly.xwNujxzs', 'OLDPWD': '/home/pitosalas/linorobot2_ws/src/obper/test', 'TERM_PROGRAM_VERSION': '1.99.3', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-2e33d73e-8148-4e4c-8d5a-9cf547da6349.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/home/pitosalas/.vscode-server/bin/17baf841131aa23349f217ca7c570c76ee87b957/extensions/git/dist/askpass-main.js', 'PS1': '\\[\x1b]633;A\x07\\][\\h:\\w] \\[\x1b]633;B\x07\\]', 'VSCODE_GIT_ASKPASS_NODE': '/home/pitosalas/.vscode-server/bin/17baf841131aa23349f217ca7c570c76ee87b957/node', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'BUNDLED_DEBUGPY_PATH': '/home/pitosalas/.vscode-server/extensions/ms-python.debugpy-2025.6.0-linux-arm64/bundled/libs/debugpy', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'COLCON_PREFIX_PATH': '/home/pitosalas/linorobot2_ws/install:/home/pitosalas/uros_ws/install', 'ROS_DISTRO': 'jazzy', 'MCFLY_LIGHT': 'TRUE', 'LOGNAME': 'pitosalas', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '15', 'HISTCONTROL': 'ignorespace', 'PATH': '/home/pitosalas/.vscode-server/bin/17baf841131aa23349f217ca7c570c76ee87b957/bin/remote-cli:/home/pitosalas/.local/bin:/home/pitosalas/.local/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/pitosalas/.local/bin:/home/pitosalas/.platformio/penv/bin:/home/pitosalas/.local/bin:/home/pitosalas/.platformio/penv/bin:/home/pitosalas/.vscode-server/extensions/ms-python.debugpy-2025.6.0-linux-arm64/bundled/scripts/noConfigScripts:/home/pitosalas/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/home/pitosalas/.local/bin:/home/pitosalas/.platformio/penv/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/pitosalas/.vscode-server/extensions/ms-python.debugpy-2025.6.0-linux-arm64/.noConfigDebugAdapterEndpoints/endpoint-c21b11ecaf34b0ec.txt', 'LANG': 'en_US.UTF-8', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-68db439136.sock', 'TERM_PROGRAM': 'vscode', 'AMENT_PREFIX_PATH': '/home/pitosalas/linorobot2_ws/install/status_panel:/home/pitosalas/linorobot2_ws/install/obper:/home/pitosalas/linorobot2_ws/install/robot_msgs:/home/pitosalas/linorobot2_ws/install/nav_tools:/home/pitosalas/linorobot2_ws/install/micro_ros_setup:/home/pitosalas/linorobot2_ws/install/linorobot2_navigation:/home/pitosalas/linorobot2_ws/install/linorobot2_gazebo:/home/pitosalas/linorobot2_ws/install/dome:/home/pitosalas/linorobot2_ws/install/linorobot2_description:/home/pitosalas/linorobot2_ws/install/linorobot2_bringup:/home/pitosalas/linorobot2_ws/install/linorobot2_base:/home/pitosalas/linorobot2_ws/install/linorobot2:/home/pitosalas/linorobot2_ws/install/lib_ros_examples:/home/pitosalas/linorobot2_ws/install/imu_calib:/home/pitosalas/linorobot2_ws/install/hls_lfcd_lds_driver:/home/pitosalas/linorobot2_ws/install/dome_interfaces:/home/pitosalas/uros_ws/install/micro_ros_agent:/home/pitosalas/uros_ws/install/micro_ros_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'PWD': '/home/pitosalas/linorobot2_ws/src/obper/build/obper', 'MCFLY_SESSION_ID': 'qV6OVKQiC4BzPJO63NObqj54', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '192.168.5.92 54103 192.168.5.118 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'LINOROBOT2_DEPTH_SENSOR': '', 'PYTHONPATH': '/home/pitosalas/linorobot2_ws/src/obper/build/obper/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/status_panel/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/obper/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/robot_msgs/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/linorobot2_gazebo/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/dome/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/lib_ros_examples/lib/python3.12/site-packages:/home/pitosalas/linorobot2_ws/install/dome_interfaces/lib/python3.12/site-packages:/home/pitosalas/uros_ws/install/micro_ros_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'LINOROBOT2_LASER_SENSOR': '', 'CMAKE_PREFIX_PATH': '/home/pitosalas/linorobot2_ws/install/robot_msgs:/home/pitosalas/linorobot2_ws/install/nav_tools:/home/pitosalas/linorobot2_ws/install/micro_ros_setup:/home/pitosalas/linorobot2_ws/install/linorobot2_navigation:/home/pitosalas/linorobot2_ws/install/linorobot2_gazebo:/home/pitosalas/linorobot2_ws/install/linorobot2_description:/home/pitosalas/linorobot2_ws/install/linorobot2_bringup:/home/pitosalas/linorobot2_ws/install/linorobot2_base:/home/pitosalas/linorobot2_ws/install/linorobot2:/home/pitosalas/linorobot2_ws/install/imu_calib:/home/pitosalas/linorobot2_ws/install/hls_lfcd_lds_driver:/home/pitosalas/linorobot2_ws/install/dome_interfaces:/home/pitosalas/uros_ws/install/micro_ros_agent:/home/pitosalas/uros_ws/install/micro_ros_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'ROS2_WS': 'linorobot2_ws'}, 'shell': False}
+[8.054881] (-) TimerEvent: {}
+[8.158534] (-) TimerEvent: {}
+[8.259508] (-) TimerEvent: {}
+[8.360613] (-) TimerEvent: {}
+[8.462766] (-) TimerEvent: {}
+[8.564817] (-) TimerEvent: {}
+[8.666519] (-) TimerEvent: {}
+[8.767776] (-) TimerEvent: {}
+[8.872597] (-) TimerEvent: {}
+[8.973544] (-) TimerEvent: {}
+[9.074308] (-) TimerEvent: {}
+[9.179562] (-) TimerEvent: {}
+[9.285566] (-) TimerEvent: {}
+[9.386319] (-) TimerEvent: {}
+[9.487205] (-) TimerEvent: {}
+[9.588598] (-) TimerEvent: {}
+[9.690939] (-) TimerEvent: {}
+[9.793673] (-) TimerEvent: {}
+[9.896614] (-) TimerEvent: {}
+[9.997566] (-) TimerEvent: {}
+[10.099529] (-) TimerEvent: {}
+[10.200244] (-) TimerEvent: {}
+[10.301967] (-) TimerEvent: {}
+[10.403614] (-) TimerEvent: {}
+[10.504584] (-) TimerEvent: {}
+[10.610670] (-) TimerEvent: {}
+[10.711527] (-) TimerEvent: {}
+[10.815637] (-) TimerEvent: {}
+[10.919378] (-) TimerEvent: {}
+[11.021585] (-) TimerEvent: {}
+[11.089069] (obper) StdoutLine: {'line': b'running egg_info\n'}
+[11.121779] (-) TimerEvent: {}
+[11.223250] (-) TimerEvent: {}
+[11.331754] (-) TimerEvent: {}
+[11.396873] (obper) StdoutLine: {'line': b'writing build/obper/obper.egg-info/PKG-INFO\n'}
+[11.405488] (obper) StdoutLine: {'line': b'writing dependency_links to build/obper/obper.egg-info/dependency_links.txt\n'}
+[11.412087] (obper) StdoutLine: {'line': b'writing entry points to build/obper/obper.egg-info/entry_points.txt\n'}
+[11.417975] (obper) StdoutLine: {'line': b'writing requirements to build/obper/obper.egg-info/requires.txt\n'}
+[11.420271] (obper) StdoutLine: {'line': b'writing top-level names to build/obper/obper.egg-info/top_level.txt\n'}
+[11.431919] (-) TimerEvent: {}
+[11.533651] (-) TimerEvent: {}
+[11.636184] (-) TimerEvent: {}
+[11.738665] (-) TimerEvent: {}
+[11.841218] (-) TimerEvent: {}
+[11.943146] (-) TimerEvent: {}
+[11.998399] (obper) StdoutLine: {'line': b"reading manifest file 'build/obper/obper.egg-info/SOURCES.txt'\n"}
+[12.002929] (obper) StdoutLine: {'line': b"writing manifest file 'build/obper/obper.egg-info/SOURCES.txt'\n"}
+[12.005266] (obper) StdoutLine: {'line': b'running build\n'}
+[12.006034] (obper) StdoutLine: {'line': b'running build_py\n'}
+[12.008213] (obper) StdoutLine: {'line': b'running install\n'}
+[12.039510] (obper) StdoutLine: {'line': b'running install_lib\n'}
+[12.043563] (-) TimerEvent: {}
+[12.144380] (-) TimerEvent: {}
+[12.247262] (-) TimerEvent: {}
+[12.315732] (obper) StdoutLine: {'line': b'running install_data\n'}
+[12.317620] (obper) StdoutLine: {'line': b'running install_egg_info\n'}
+[12.347530] (-) TimerEvent: {}
+[12.449558] (-) TimerEvent: {}
+[12.554051] (-) TimerEvent: {}
+[12.616112] (obper) StdoutLine: {'line': b"removing '/home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info' (and everything under it)\n"}
+[12.620713] (obper) StdoutLine: {'line': b'Copying build/obper/obper.egg-info to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info\n'}
+[12.629508] (obper) StdoutLine: {'line': b'running install_scripts\n'}
+[12.654270] (-) TimerEvent: {}
+[12.755178] (-) TimerEvent: {}
+[12.858349] (-) TimerEvent: {}
+[12.959915] (-) TimerEvent: {}
+[13.061192] (-) TimerEvent: {}
+[13.162969] (-) TimerEvent: {}
+[13.264720] (-) TimerEvent: {}
+[13.365855] (-) TimerEvent: {}
+[13.469904] (-) TimerEvent: {}
+[13.570735] (-) TimerEvent: {}
+[13.671483] (-) TimerEvent: {}
+[13.774398] (-) TimerEvent: {}
+[13.880672] (-) TimerEvent: {}
+[13.982288] (-) TimerEvent: {}
+[14.083196] (-) TimerEvent: {}
+[14.183985] (-) TimerEvent: {}
+[14.199262] (obper) StdoutLine: {'line': b'Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper\n'}
+[14.200753] (obper) StdoutLine: {'line': b'Installing explore2 script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper\n'}
+[14.202791] (obper) StdoutLine: {'line': b'Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper\n'}
+[14.204265] (obper) StdoutLine: {'line': b"writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log'\n"}
+[14.284323] (-) TimerEvent: {}
+[14.386550] (-) TimerEvent: {}
+[14.394535] (obper) CommandEnded: {'returncode': 0}
+[14.459125] (obper) JobEnded: {'identifier': 'obper', 'rc': 0}
+[14.487643] (-) TimerEvent: {}
+[14.488150] (-) EventReactorShutdown: {}
