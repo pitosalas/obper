@@ -1,0 +1,4 @@
+[console_scripts]
+costmap_subscriber = obper.costmap_subscriber:main
+explore2 = obper.explore2:main
+explorer_node = obper.explorer_node:main

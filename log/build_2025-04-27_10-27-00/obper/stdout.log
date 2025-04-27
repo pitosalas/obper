@@ -1,0 +1,49 @@
+running egg_info
+creating build/obper/obper.egg-info
+writing build/obper/obper.egg-info/PKG-INFO
+writing dependency_links to build/obper/obper.egg-info/dependency_links.txt
+writing entry points to build/obper/obper.egg-info/entry_points.txt
+writing requirements to build/obper/obper.egg-info/requires.txt
+writing top-level names to build/obper/obper.egg-info/top_level.txt
+writing manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+reading manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+writing manifest file 'build/obper/obper.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/pitosalas/linorobot2_ws/src/obper/build/obper/build
+creating /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib
+creating /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+copying obper/explorer_node.py -> /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+copying obper/explore2.py -> /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+copying obper/__init__.py -> /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+copying obper/costmap_subsciber.py -> /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper
+running install
+running install_lib
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+copying /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper/explorer_node.py -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+copying /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper/explore2.py -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+copying /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper/__init__.py -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+copying /home/pitosalas/linorobot2_ws/src/obper/build/obper/build/lib/obper/costmap_subsciber.py -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper
+byte-compiling /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper/explorer_node.py to explorer_node.cpython-312.pyc
+byte-compiling /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper/explore2.py to explore2.cpython-312.pyc
+byte-compiling /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper/__init__.py to __init__.cpython-312.pyc
+byte-compiling /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper/costmap_subsciber.py to costmap_subsciber.cpython-312.pyc
+running install_data
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/ament_index
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/ament_index/resource_index
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/ament_index/resource_index/packages
+copying resource/obper -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/ament_index/resource_index/packages
+copying package.xml -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper/msg
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper/launch
+copying launch/bringup.launch.yaml -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper/launch
+creating /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper/config
+copying config/local_costmap_params.yaml -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper/config
+copying config/local_costmap.yaml -> /home/pitosalas/linorobot2_ws/src/obper/install/obper/share/obper/config
+running install_egg_info
+Copying build/obper/obper.egg-info to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/python3.12/site-packages/obper-0.0.1-py3.12.egg-info
+running install_scripts
+Installing costmap_subscriber script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+Installing explore2 script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+Installing explorer_node script to /home/pitosalas/linorobot2_ws/src/obper/install/obper/lib/obper
+writing list of installed files to '/home/pitosalas/linorobot2_ws/src/obper/build/obper/install.log'
