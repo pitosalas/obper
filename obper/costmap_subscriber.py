@@ -176,6 +176,7 @@ class LocalCostmapSubscriber(Node):
 
         # Publish RViz markers
         self.publish_beam_markers(angles, distances)
+        self.print_costmap()
 
     def print_costmap(self):
         if self.costmap is None:

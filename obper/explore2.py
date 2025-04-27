@@ -38,7 +38,7 @@ import logging
 
 class Explore2(Node):
     def __init__(self):
-        super().__init__("explore_purposeful")
+        super().__init__("ex2")
 
         # Parameters
         self.grid_resolution = 0.25
@@ -70,22 +70,16 @@ class Explore2(Node):
         self.cmd_timer = self.create_timer(0.05, self.publish_current_twist)  # 20 Hz
         self.current_twist = Twist()
 
-        # Compact format, include ALL levels (DEBUG and above)
-        logging.basicConfig(
-            format='[%(levelname)s] %(message)s',
-            level=logging.DEBUG  # <== Important: allow DEBUG, INFO, WARN, ERROR
-        )
-
     def beam_callback(self, msg):
         self.get_logger().debug(f"State: {self.current_state}")
         self.current_beams = list(zip(msg.angles, msg.distances))
         if self.current_state == "IDLE" and self.current_beams:
-            self.select_new_goal()
+            self.select_new_goal("Get out of IDLE")
+        elif self.current_state == "DRIV" and msg.distances[4] < 1.0:
+            self.select_new_goal("Obstacle detected")
 
-    def select_new_goal(self):
-        beams = sorted(self.current_beams, key=lambda x: x[1], reverse=True)
-        candidates = beams[:5]
-        best_angle, best_distance = random.choice(candidates)
+    def select_new_goal(self, reason: str):
+        best_angle, best_distance = max(self.current_beams, key=lambda x: x[1])
 
         pose = self.get_robot_pose()
         if pose is None:
@@ -96,7 +90,7 @@ class Explore2(Node):
         self.goal_point : Point = Point(x=x, y=y)
         self.set_state("TURN")
         self.get_logger().info(
-            f"New goal: ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}"
+            f"New goal because {reason}: new goal at ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}"
         )
 
     def set_state(self, state):
@@ -142,9 +136,8 @@ class Explore2(Node):
             angle_to_goal = math.atan2(
                 self.goal_point.y - pose.y, self.goal_point.x - pose.x
             )
-            angle_diff = self.normalize_angle(angle_to_goal - pose.y)
-            print(f"angle to goal: {math.degrees(angle_to_goal):.1f}°, "
-                  f"angle diff: {math.degrees(angle_diff):.1f}°")
+            angle_diff = self.normalize_angle(angle_to_goal - pose.z)
+            self.get_logger().info(f"To goal: {math.degrees(angle_to_goal):.1f}°, diff: {math.degrees(angle_diff):.1f}°")
             if abs(angle_diff) < 0.1:
                 self.set_state("DRIV")
                 self.publish_twist(0.0, 0.0)
@@ -159,13 +152,15 @@ class Explore2(Node):
                 self.publish_twist(0.0, 0.0)
                 self.set_state("IDLE")
             else:
-#                angle_to_goal = math.atan2(dy, dx)
-#                angle_diff = self.normalize_angle(angle_to_goal - pose.y)
-#                ang_z = np.clip(self.angular_speed * angle_diff, -1.0, 1.0)
-                self.publish_twist(self.linear_speed, 0,0)
+               angle_to_goal = math.atan2(dy, dx)
+               angle_diff = self.normalize_angle(angle_to_goal - pose.y)
+               ang_z = np.clip(self.angular_speed * angle_diff, -0.5, 0.5)
+               self.publish_twist(self.linear_speed, 0.0)
         self.log_loop_data(pose)
 
     def log_loop_data(self, pose: Point):
+        if (self.loop_count % 10) == 0:
+            self.get_logger().info(f"=== Loop count: {self.loop_count}")
         minf = float("-inf")
         lx = self.current_twist.linear.x
         az = self.current_twist.angular.z
