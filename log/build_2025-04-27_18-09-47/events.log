@@ -1,0 +1,28 @@
+[0.000000] (-) TimerEvent: {}
+[0.000981] (obper) JobQueued: {'identifier': 'obper', 'dependencies': OrderedDict()}
+[0.001852] (obper) JobStarted: {'identifier': 'obper'}
+[0.099271] (-) TimerEvent: {}
+[0.199958] (-) TimerEvent: {}
+[0.300633] (-) TimerEvent: {}
+[0.401262] (-) TimerEvent: {}
+[0.501952] (-) TimerEvent: {}
+[0.602541] (-) TimerEvent: {}
+[0.703944] (-) TimerEvent: {}
+[0.804553] (-) TimerEvent: {}
+[0.905105] (-) TimerEvent: {}
+[1.005764] (-) TimerEvent: {}
+[1.106459] (-) TimerEvent: {}
+[1.207189] (-) TimerEvent: {}
+[1.308334] (-) TimerEvent: {}
+[1.409128] (-) TimerEvent: {}
+[1.509755] (-) TimerEvent: {}
+[1.610414] (-) TimerEvent: {}
+[1.711124] (-) TimerEvent: {}
+[1.811874] (-) TimerEvent: {}
+[1.912454] (-) TimerEvent: {}
+[2.013015] (-) TimerEvent: {}
+[2.113645] (-) TimerEvent: {}
+[2.214502] (-) TimerEvent: {}
+[2.243710] (obper) StderrLine: {'line': b'Traceback (most recent call last):\n  File "/usr/lib/python3/dist-packages/colcon_parallel_executor/executor/parallel.py", line 75, in execute\n    loop.run_until_complete(future)\n  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete\n    self.run_forever()\n  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever\n    self._run_once()\n  File "/usr/lib/python3.12/asyncio/base_events.py", line 1949, in _run_once\n    event_list = self._selector.select(timeout)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3.12/selectors.py", line 468, in select\n    fd_event_list = self._selector.poll(timeout, max_ev)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nKeyboardInterrupt\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File "/usr/lib/python3/dist-packages/colcon_core/executor/__init__.py", line 91, in __call__\n    rc = await self.task(*args, **kwargs)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/colcon_core/task/__init__.py", line 93, in __call__\n    return await task_method(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/colcon_ros/task/ament_python/build.py", line 102, in build\n    return await extension.build(additional_hooks=additional_hooks)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/colcon_core/task/python/build.py", line 96, in build\n    available_commands = await self._get_available_commands(\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/colcon_core/task/python/build.py", line 194, in _get_available_commands\n    output = await check_output(\n             ^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/colcon_core/subprocess.py", line 129, in check_output\n    assert not rc, f\'Expected {args} to pass: {stderr_data}\'\n           ^^^^^^\nAssertionError: Expected [\'/usr/bin/python3\', \'-W\', \'ignore:setup.py install is deprecated\', \'-W\', \'ignore:easy_install command is deprecated\', \'setup.py\', \'--help-commands\'] to pass: Traceback (most recent call last):\n  File "/home/pitosalas/linorobot2_ws/src/obper/setup.py", line 7, in <module>\n    setup(\n  File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 107, in setup\n    return distutils.core.setup(**attrs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/setuptools/_distutils/core.py", line 147, in setup\n    _setup_distribution = dist = klass(attrs)\n                                 ^^^^^^^^^^^^\n  File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 485, in __init__\n    _Distribution.__init__(\n  File "/usr/lib/python3/dist-packages/setuptools/_distutils/dist.py", line 283, in __init__\n    self.finalize_options()\n  File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 922, in finalize_options\n    defined = metadata.entry_points(group=group)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3.12/importlib/metadata/__init__.py", line 913, in entry_points\n    return EntryPoints(eps).select(**params)\n           ^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3.12/importlib/metadata/__init__.py", line 910, in <genexpr>\n    eps = itertools.chain.from_iterable(\n                                       ^\n  File "/usr/lib/python3.12/importlib/metadata/_itertools.py", line 16, in unique_everseen\n    k = key(element)\n        ^^^^^^^^^^^^\n  File "/usr/lib/python3.12/importlib/metadata/__init__.py", line 834, in _normalized_name\n    pass_none(Prepared.normalize)(self._name_from_stem(stem))\n  File "/usr/lib/python3.12/importlib/metadata/_functools.py", line 102, in wrapper\n    return func(param, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3.12/importlib/metadata/__init__.py", line 762, in normalize\n    return re.sub(r"[-_.]+", "-", name).lower().replace(\'-\', \'_\')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/usr/lib/python3.12/re/__init__.py", line 186, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nKeyboardInterrupt\n\n'}
+[2.246478] (obper) JobEnded: {'identifier': 'obper', 'rc': 'SIGINT'}
+[2.256038] (-) EventReactorShutdown: {}

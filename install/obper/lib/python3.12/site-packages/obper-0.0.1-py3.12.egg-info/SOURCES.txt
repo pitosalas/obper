@@ -15,5 +15,5 @@ obper/__init__.py
 obper/costmap_subsciber.py
 obper/explore2.py
 obper/explorer_node.py
+obper/test_costmap_subscriber.py
 resource/obper
-test/test_costmap_subsciber.py
