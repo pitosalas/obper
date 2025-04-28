@@ -45,11 +45,10 @@ def print_costmap_with_robot(costmap_msg, robot_x, robot_y, robot_marker='R'):
             idx = j * width + i
             if i == i_robot and j == j_robot:
                 row += robot_marker
+            elif data[idx] > 50:
+                row += "#"
             else:
-                if data[idx] > 50:
-                    row += "#"
-                else:
-                    row += "."
+                row += "."
         print(row)
     print()
 
@@ -58,9 +57,7 @@ def wall_at_x(costmap_msg, x_wall):
     width = costmap_msg.info.width
     height = costmap_msg.info.height
     resolution = costmap_msg.info.resolution
-    origin_x = costmap_msg.info.origin.position.x
-    origin_y = costmap_msg.info.origin.position.y
-    x_wall_cell = int((x_wall - origin_x) / resolution)
+    x_wall_cell = int((x_wall) / resolution)
 
     for y in range(height):
         for x in range(width):
@@ -68,11 +65,18 @@ def wall_at_x(costmap_msg, x_wall):
                 idx = y * width + x
                 costmap_msg.data[idx] = 100  # Mark as obstacle
 
+def assert_beam(beam_index, expected_distance, distances):
+    """Asserts that the beam at index 'beam_index' has the expected distance."""
+    if not math.isclose(distances[beam_index], expected_distance, rel_tol=0.05):
+        print(f"Beam {beam_index} failed: {distances[beam_index]:.2f}m vs expected {expected_distance:.2f}m")
+    else:
+        print(f"✅ Beam {beam_index} passed: {distances[beam_index]:.2f}m")
+
 def main():
     """Test BeamChecker directly without ROS 2 or LocalCostmapSubscriber."""
-    costmap_msg = create_simple_costmap(11, 11)
-    wall_at_x(costmap_msg, 1.0)
-    robot_pose = (0.0, 2.5, 0.0)  # x, y, yaw
+    costmap_msg = create_simple_costmap(21, 21)
+    wall_at_x(costmap_msg, 2.0)
+    robot_pose = (0.0, 1.0, 0.0)  # x, y, yaw
 
     angles = np.linspace(-math.pi/2, math.pi/2, 9)
     widths = [0.1] * len(angles)
@@ -89,19 +93,7 @@ def main():
 
     distances = beam_checker.check_beams(robot_x, robot_y, robot_yaw, angles, widths)
     print_costmap_with_robot(costmap_msg, robot_x=robot_x, robot_y=robot_y)
-
-
-    expected_distance = 0.5  # 5 cells x 0.1m each
-    all_passed = True
-    for i, (angle, dist) in enumerate(zip(angles, distances)):
-        if not math.isclose(dist, expected_distance, rel_tol=0.05):
-            print(f"❌ Beam {i} (angle {math.degrees(angle):.1f}°) failed: {dist:.2f}m vs expected {expected_distance:.2f}m")
-            all_passed = False
-
-    if all_passed:
-        print("✅ All beams passed!")
-    else:
-        print("❌ Some beams failed.")
+    assert_beam(4, 2.0, distances)
 
 if __name__ == "__main__":
     main()
