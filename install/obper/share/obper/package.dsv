@@ -1,6 +1,0 @@
-source;share/obper/hook/pythonpath.ps1
-source;share/obper/hook/pythonpath.dsv
-source;share/obper/hook/pythonpath.sh
-source;share/obper/hook/ament_prefix_path.ps1
-source;share/obper/hook/ament_prefix_path.dsv
-source;share/obper/hook/ament_prefix_path.sh

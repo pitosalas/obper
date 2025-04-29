@@ -90,7 +90,7 @@ class LocalCostmapSubscriber(Node):
                  target_frame="odom",
                  source_frame="base_link",
                  create_timer=True):
-        super().__init__('local_costmap_listener')
+        super().__init__('local_costmap_subscriber')
 
         self.target_frame = target_frame
         self.source_frame = source_frame
@@ -114,6 +114,7 @@ class LocalCostmapSubscriber(Node):
 
         if create_timer:
             self.create_timer(timer_period, self.timer_callback)
+        self.get_logger().info("LocalCostmapSubscriber initialized.")
 
     def costmap_callback(self, msg):
         if self.beam_checker is None:
@@ -128,6 +129,7 @@ class LocalCostmapSubscriber(Node):
             )
             self.get_logger().info("Initialized BeamChecker.")
         else:
+            self.get_logger().info("Updated BeamChecker.")            
             self.beam_checker.update_data(msg.data)
 
     def get_robot_pose(self):
@@ -145,16 +147,13 @@ class LocalCostmapSubscriber(Node):
     def timer_callback(self):
         if self.beam_checker is None:
             return
-
         pose = self.get_robot_pose()
         if pose is None:
             return
-
         x, y, yaw = pose
         angles = np.linspace(-math.pi/2, math.pi/2, 9)
         widths = [0.1] * len(angles)
         distances = self.beam_checker.check_beams(x, y, yaw, angles, widths, max_range=self.default_max_range)
-
         self.publish_beam_distances(angles, distances)
         self.publish_beam_markers(angles, distances)
 

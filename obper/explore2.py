@@ -85,9 +85,11 @@ class Explore2(Node):
         if pose is None:
             return
 
-        x = pose.x + best_distance * math.cos(pose.y + best_angle)
-        y = pose.y + best_distance * math.sin(pose.y + best_angle)
-        self.goal_point : Point = Point(x=x, y=y)
+        tot_angle = pose.z + best_angle
+        x = pose.x + best_distance * math.cos(tot_angle)
+        y = pose.y + best_distance * math.sin(tot_angle)
+
+        self.goal_point = Point(x=x, y=y)
         self.set_state("TURN")
         self.get_logger().info(
             f"New goal because {reason}: new goal at ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}"
@@ -112,14 +114,15 @@ class Explore2(Node):
             self.get_logger().debug(f"TF lookup failed: {type(e).__name__}")
             return None
 
-    def publish_twist(self, linear_x, angular_z):
+    def set_current_twist(self, linear_x, angular_z):
         self.current_twist.linear.x = linear_x
         self.current_twist.angular.z = angular_z
         self.get_logger().debug(
             f"Set cmd_vel: linear.x={linear_x:.2f}, angular.z={angular_z:.2f}"
         )
 
-    def publish_current_twist(self):    
+    def publish_current_twist(self): 
+        # pass   
         self.cmd_pub.publish(self.current_twist)
 
     def control_loop(self):
@@ -140,27 +143,27 @@ class Explore2(Node):
             self.get_logger().info(f"To goal: {math.degrees(angle_to_goal):.1f}°, diff: {math.degrees(angle_diff):.1f}°")
             if abs(angle_diff) < 0.1:
                 self.set_state("DRIV")
-                self.publish_twist(0.0, 0.0)
+                self.set_current_twist(0.0, 0.0)
             else:
-                self.publish_twist(0.0, self.angular_speed * np.sign(angle_diff))
+                self.set_current_twist(0.0, self.angular_speed * np.sign(angle_diff))
 
         elif self.current_state == "DRIV":
             dx = self.goal_point.x - pose.x
             dy = self.goal_point.y - pose.y
             dist = math.hypot(dx, dy)
             if dist < self.goal_tolerance:
-                self.publish_twist(0.0, 0.0)
+                self.set_current_twist(0.0, 0.0)
                 self.set_state("IDLE")
             else:
                angle_to_goal = math.atan2(dy, dx)
                angle_diff = self.normalize_angle(angle_to_goal - pose.y)
                ang_z = np.clip(self.angular_speed * angle_diff, -0.5, 0.5)
-               self.publish_twist(self.linear_speed, 0.0)
+               self.set_current_twist(self.linear_speed, 0.0)
         self.log_loop_data(pose)
 
     def log_loop_data(self, pose: Point):
         if (self.loop_count % 10) == 0:
-            self.get_logger().info(f"=== Loop count: {self.loop_count}")
+            self.get_logger().info(f"*********** Loop count: {self.loop_count}")
         minf = float("-inf")
         lx = self.current_twist.linear.x
         az = self.current_twist.angular.z

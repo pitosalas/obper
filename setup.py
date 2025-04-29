@@ -27,7 +27,6 @@ setup(
     entry_points={
         "console_scripts": [
             "costmap_subscriber = obper.costmap_subscriber:main",
-            "explorer_node = obper.explorer_node:main",
             "explore2 = obper.explore2:main",
             "test_costmap_subscriber = obper.test_costmap_subscriber:main",
         ],

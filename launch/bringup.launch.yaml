@@ -6,6 +6,11 @@ launch:
       name: 'explore'
       default: 'false'
       description: 'explorer node'
+  - arg:
+      name: 'costmap'
+      default: 'false'
+      description: 'costmap node'
+
   - node:
       pkg: nav_tools
       exec: costmap_node
@@ -18,6 +23,7 @@ launch:
       exec: costmap_subscriber
       name: costmap_subscriber
       output: screen
+      if: "$(var costmap)"      
   - node:
       pkg: obper
       exec: explpre2

@@ -1,4 +1,0 @@
-[console_scripts]
-costmap_subscriber = obstacle_perception.costmap_subscriber:main
-explore_purposeful = obstacle_perception.explore_purposeful:main
-explorer_node = obstacle_perception.explorer_node:main
