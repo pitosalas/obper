@@ -8,7 +8,7 @@
 import numpy as np
 import math
 from nav_msgs.msg import OccupancyGrid
-from obper.costmap_subsciber import BeamChecker
+from linorobot2_ws.src.obper.obper.costmap_subscriber import BeamChecker
 
 def create_simple_costmap(width, height):
     """Creates a simple OccupancyGrid with free space below 'obstacle_rows' and obstacles above."""

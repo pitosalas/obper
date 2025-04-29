@@ -95,7 +95,7 @@ class LocalCostmapSubscriber(Node):
         self.target_frame = target_frame
         self.source_frame = source_frame
         self.cost_threshold = cost_threshold
-        self.default_max_range = 2.5
+        self.default_max_range = 1.0 # just used for color of marker
         self.default_step_size = None
 
         self.subscription = self.create_subscription(

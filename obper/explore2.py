@@ -36,6 +36,7 @@ import math
 import random
 import logging
 
+
 class Explore2(Node):
     def __init__(self):
         super().__init__("ex2")
@@ -50,7 +51,7 @@ class Explore2(Node):
         # State
         self.visited_map = np.zeros((self.grid_size, self.grid_size), dtype=np.uint8)
         self.set_state("IDLE")
-        self.goal_point : Point | None = None
+        self.goal_point: Point | None = None
         self.current_beams = []
         self.loop_count = 0
 
@@ -64,7 +65,7 @@ class Explore2(Node):
         )
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
         self.occ_marker = self.create_publisher(Marker, "/occupancy", 10)
-        self.goal_marker = self.create_publisher(Marker, "/goal", 10)     
+        self.goal_marker = self.create_publisher(Marker, "/goal", 10)
 
         self.timer = self.create_timer(0.2, self.control_loop)  # 5 Hz
         self.cmd_timer = self.create_timer(0.05, self.publish_current_twist)  # 20 Hz
@@ -75,7 +76,9 @@ class Explore2(Node):
         self.current_beams = list(zip(msg.angles, msg.distances))
         if self.current_state == "IDLE" and self.current_beams:
             self.select_new_goal("Get out of IDLE")
-        elif self.current_state == "DRIV" and msg.distances[4] < 1.0:
+        elif self.current_state == "DRIV" and any(
+            d < 0.5 for _, d in self.current_beams[3:6]
+        ):
             self.select_new_goal("Obstacle detected")
 
     def select_new_goal(self, reason: str):
@@ -108,7 +111,9 @@ class Explore2(Node):
             trans = self.tf_buffer.lookup_transform("odom", "base_link", now)
             t = trans.transform.translation
             q = trans.transform.rotation
-            roll, pitch, yaw = tf_transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])            
+            roll, pitch, yaw = tf_transformations.euler_from_quaternion(
+                [q.x, q.y, q.z, q.w]
+            )
             return Point(x=t.x, y=t.y, z=yaw)
         except (LookupException, ConnectivityException, ExtrapolationException) as e:
             self.get_logger().debug(f"TF lookup failed: {type(e).__name__}")
@@ -121,8 +126,8 @@ class Explore2(Node):
             f"Set cmd_vel: linear.x={linear_x:.2f}, angular.z={angular_z:.2f}"
         )
 
-    def publish_current_twist(self): 
-        # pass   
+    def publish_current_twist(self):
+        # pass
         self.cmd_pub.publish(self.current_twist)
 
     def control_loop(self):
@@ -140,7 +145,9 @@ class Explore2(Node):
                 self.goal_point.y - pose.y, self.goal_point.x - pose.x
             )
             angle_diff = self.normalize_angle(angle_to_goal - pose.z)
-            self.get_logger().info(f"To goal: {math.degrees(angle_to_goal):.1f}°, diff: {math.degrees(angle_diff):.1f}°")
+            self.get_logger().info(
+                f"To goal: {math.degrees(angle_to_goal):.1f}°, diff: {math.degrees(angle_diff):.1f}°"
+            )
             if abs(angle_diff) < 0.1:
                 self.set_state("DRIV")
                 self.set_current_twist(0.0, 0.0)
@@ -155,10 +162,10 @@ class Explore2(Node):
                 self.set_current_twist(0.0, 0.0)
                 self.set_state("IDLE")
             else:
-               angle_to_goal = math.atan2(dy, dx)
-               angle_diff = self.normalize_angle(angle_to_goal - pose.y)
-               ang_z = np.clip(self.angular_speed * angle_diff, -0.5, 0.5)
-               self.set_current_twist(self.linear_speed, 0.0)
+                angle_to_goal = math.atan2(dy, dx)
+                angle_diff = self.normalize_angle(angle_to_goal - pose.y)
+                ang_z = np.clip(self.angular_speed * angle_diff, -0.5, 0.5)
+                self.set_current_twist(self.linear_speed, 0.0)
         self.log_loop_data(pose)
 
     def log_loop_data(self, pose: Point):
@@ -177,16 +184,18 @@ class Explore2(Node):
         else:
             gx = self.goal_point.x
             gy = self.goal_point.y
-        current_beam_as_str = ",".join(
-            f"{a:.1f}:{d:.1f}" for a, d in self.current_beams
-        )
+        cb = self.current_beams
+        current_beam_as_str = " ".join(
+            f"<<{cb[i][1]}>>" if i == 4 else f"{cb[i][1]}"
+            for i in range(9))
         dist = math.hypot(gx - px, gy - py) if self.goal_point else minf
         self.get_logger().info(
             f"{self.loop_count:3d},{self.current_state},{lx:.1f},{az:.1f}, {px:.2f},{py:.2f},{gx:.1f},{gy:.1f},{dist:.1f},[{current_beam_as_str}]"
         )
 
     def create_marker(
-        self, ns, marker_id, marker_type, color: ColorRGBA, scale: Vector3):
+        self, ns, marker_id, marker_type, color: ColorRGBA, scale: Vector3
+    ):
         marker = Marker()
         marker.header.frame_id = "odom"
         marker.header.stamp = self.get_clock().now().to_msg()
@@ -194,8 +203,8 @@ class Explore2(Node):
         marker.id = marker_id
         marker.type = marker_type
         marker.action = Marker.ADD
-        marker.scale = scale     
-        marker.color = color      
+        marker.scale = scale
+        marker.color = color
         return marker
 
     def update_visited_map(self, x, y):
@@ -209,11 +218,13 @@ class Explore2(Node):
             self.visited_map[cy, cx] = 1
 
     def publish_visited_cells(self):
-        marker = self.create_marker(    
-            "visited", 0, Marker.CUBE_LIST,
+        marker = self.create_marker(
+            "visited",
+            0,
+            Marker.CUBE_LIST,
             ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
-            Vector3(x=self.grid_resolution, y=self.grid_resolution, z=0.1))
-
+            Vector3(x=self.grid_resolution, y=self.grid_resolution, z=0.1),
+        )
 
         # for j in range(self.grid_size):
         #     for i in range(self.grid_size):
@@ -230,9 +241,11 @@ class Explore2(Node):
         if self.goal_point is None:
             return
         marker = self.create_marker(
-            "goal", 1, Marker.SPHERE,
+            "goal",
+            1,
+            Marker.SPHERE,
             ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
-            Vector3(x=0.1, y=0.1, z=0.1)
+            Vector3(x=0.1, y=0.1, z=0.1),
         )
         marker.pose.position.x = self.goal_point.x
         marker.pose.position.y = self.goal_point.y
@@ -242,6 +255,7 @@ class Explore2(Node):
     @staticmethod
     def normalize_angle(angle):
         return math.atan2(math.sin(angle), math.cos(angle))
+
 
 def main(args=None):
     rclpy.init(args=args)
