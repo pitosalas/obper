@@ -53,12 +53,10 @@ class BeamChecker:
         idx = j * self.width + i
         return self.costmap[idx]
 
-    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range=2.5, step_size=None):
+    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range=2.5):
         if self.costmap is None:
             return [None] * len(angles)
-
-        if step_size is None:
-            step_size = self.resolution / 2.0
+        step_size = self.resolution / 2.0
 
         distances = []
         for angle, spread in zip(angles, widths):
@@ -70,15 +68,14 @@ class BeamChecker:
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
                 result = self.world_to_map(x, y)
-                if result is None:
-                    continue
-                i, j = result
-                cost = self.map_cost(i, j)
-                if cost > self.cost_threshold:
+                # If beam reaches outside map, we assume there's a wall beyond the map — that's the max distance
+                result_outside_map = result is None
+                # If beam is inside map, we check if the cost is above the threshold (indicating an obstacle)
+                obstacle_in_map = result and self.map_cost(*result) > self.cost_threshold
+                if result_outside_map or obstacle_in_map:
                     distance = d
                     break
             distances.append(distance)
-
         return distances
 
 class LocalCostmapSubscriber(Node):
@@ -98,6 +95,7 @@ class LocalCostmapSubscriber(Node):
         self.default_max_scan_range = 3.0           # How far to look to find an obstacle
         self.default_min_crash_distance = 0.5       # just used for color of marker
         self.default_step_size = None
+        self.update_counter = 0
 
         self.subscription = self.create_subscription(
             OccupancyGrid,
@@ -118,6 +116,7 @@ class LocalCostmapSubscriber(Node):
         self.get_logger().info("LocalCostmapSubscriber initialized.")
 
     def costmap_callback(self, msg):
+        self.update_counter += 1
         if self.beam_checker is None:
             self.beam_checker = BeamChecker(
                 resolution=msg.info.resolution,
@@ -128,9 +127,9 @@ class LocalCostmapSubscriber(Node):
                 costmap=msg.data,
                 cost_threshold=self.cost_threshold
             )
-            self.get_logger().info("Initialized BeamChecker.")
+            self.get_logger().info(f"Initialized BeamChecker (cb: {self.update_counter}).")
         else:
-            self.get_logger().info("Updated BeamChecker.")            
+            self.get_logger().info(f"Updated BeamChecker (cb: {self.update_counter})")            
             self.beam_checker.update_data(msg.data)
 
     def get_robot_pose(self):
@@ -179,8 +178,7 @@ class LocalCostmapSubscriber(Node):
             marker.action = Marker.ADD
             marker.scale.x = 0.005
             marker.scale.y = 0.02
-            marker.scale.z = 0.02
-            marker.lifetime = Duration(sec=1, nanosec=0)
+            marker.scale.z = 0.03
             marker.color.r = 1.0 if distance < self.default_min_crash_distance else 0.0
             marker.color.g = 0.0 if distance < self.default_min_crash_distance else 1.0
             marker.color.b = 0.0
