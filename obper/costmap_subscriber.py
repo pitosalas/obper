@@ -53,7 +53,7 @@ class BeamChecker:
         idx = j * self.width + i
         return self.costmap[idx]
 
-    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths, max_range=2.5, step_size=None):
+    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range=2.5, step_size=None):
         if self.costmap is None:
             return [None] * len(angles)
 
@@ -62,9 +62,9 @@ class BeamChecker:
 
         distances = []
         for angle, spread in zip(angles, widths):
-            distance = max_range
+            distance = max_scan_range
             global_angle = angle + robot_yaw
-            steps = int(max_range / step_size)
+            steps = int(max_scan_range / step_size)
             for step in range(steps):
                 d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
@@ -95,7 +95,8 @@ class LocalCostmapSubscriber(Node):
         self.target_frame = target_frame
         self.source_frame = source_frame
         self.cost_threshold = cost_threshold
-        self.default_max_range = 1.0 # just used for color of marker
+        self.default_max_scan_range = 3.0           # How far to look to find an obstacle
+        self.default_min_crash_distance = 0.5       # just used for color of marker
         self.default_step_size = None
 
         self.subscription = self.create_subscription(
@@ -153,7 +154,7 @@ class LocalCostmapSubscriber(Node):
         x, y, yaw = pose
         angles = np.linspace(-math.pi/2, math.pi/2, 9)
         widths = [0.1] * len(angles)
-        distances = self.beam_checker.check_beams(x, y, yaw, angles, widths, max_range=self.default_max_range)
+        distances = self.beam_checker.check_beams(x, y, yaw, angles, widths, max_scan_range=self.default_max_scan_range)
         self.publish_beam_distances(angles, distances)
         self.publish_beam_markers(angles, distances)
 
@@ -180,8 +181,8 @@ class LocalCostmapSubscriber(Node):
             marker.scale.y = 0.02
             marker.scale.z = 0.02
             marker.lifetime = Duration(sec=1, nanosec=0)
-            marker.color.r = 1.0 if distance < self.default_max_range else 0.0
-            marker.color.g = 0.0 if distance < self.default_max_range else 1.0
+            marker.color.r = 1.0 if distance < self.default_min_crash_distance else 0.0
+            marker.color.g = 0.0 if distance < self.default_min_crash_distance else 1.0
             marker.color.b = 0.0
             marker.color.a = 1.0
 

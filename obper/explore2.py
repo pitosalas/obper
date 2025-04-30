@@ -94,9 +94,8 @@ class Explore2(Node):
 
         self.goal_point = Point(x=x, y=y)
         self.set_state("TURN")
-        self.get_logger().info(
-            f"New goal because {reason}: new goal at ({x:.2f}, {y:.2f}) from angle={math.degrees(best_angle):.1f}°, distance={best_distance:.2f}"
-        )
+        self.log_loop_data(state="GLUP", pose=None)
+        self.set_current_twist(0.0, 0.0)  # Stop before turning
 
     def set_state(self, state):
         if state not in ["IDLE", "TURN", "DRIV"]:
@@ -145,9 +144,9 @@ class Explore2(Node):
                 self.goal_point.y - pose.y, self.goal_point.x - pose.x
             )
             angle_diff = self.normalize_angle(angle_to_goal - pose.z)
-            self.get_logger().info(
-                f"To goal: {math.degrees(angle_to_goal):.1f}°, diff: {math.degrees(angle_diff):.1f}°"
-            )
+            # self.get_logger().info(
+            #     f"To goal: {math.degrees(angle_to_goal):4.1f}°, diff: {math.degrees(angle_diff):4.1f}°"
+            # )
             if abs(angle_diff) < 0.1:
                 self.set_state("DRIV")
                 self.set_current_twist(0.0, 0.0)
@@ -166,31 +165,32 @@ class Explore2(Node):
                 angle_diff = self.normalize_angle(angle_to_goal - pose.y)
                 ang_z = np.clip(self.angular_speed * angle_diff, -0.5, 0.5)
                 self.set_current_twist(self.linear_speed, 0.0)
-        self.log_loop_data(pose)
+        self.log_loop_data()
 
-    def log_loop_data(self, pose: Point):
+    def log_loop_data(self, pose = None, state = None):
         if (self.loop_count % 10) == 0:
-            self.get_logger().info(f"*********** Loop count: {self.loop_count}")
+            pass                # For debugging, can be removed later
         minf = float("-inf")
         lx = self.current_twist.linear.x
         az = self.current_twist.angular.z
-        if pose is None:
+        pose = pose or self.get_robot_pose()
+        if pose:
+            px, py = pose.x, pose.y
+        else:
             px, py = minf, minf
-        else:
-            px = pose.x
-            py = pose.y
-        if self.goal_point is None:
-            gx, gy = minf, minf
-        else:
-            gx = self.goal_point.x
-            gy = self.goal_point.y
-        cb = self.current_beams
-        current_beam_as_str = " ".join(
-            f"<<{cb[i][1]}>>" if i == 4 else f"{cb[i][1]}"
-            for i in range(9))
+        goal = self.goal_point or Point(x=minf, y=minf)
+        gx, gy = goal.x, goal.y
+        current_beam_as_str = "N/A"
+        if self.current_beams:
+            cb = self.current_beams
+            current_beam_as_str = " ".join(
+                f"<<{cb[i][1]:4.1f}>>" if i == 4 else f"{cb[i][1]:4.1f}"
+                for i in range(9))
         dist = math.hypot(gx - px, gy - py) if self.goal_point else minf
+        if state is None:
+            state = self.current_state
         self.get_logger().info(
-            f"{self.loop_count:3d},{self.current_state},{lx:.1f},{az:.1f}, {px:.2f},{py:.2f},{gx:.1f},{gy:.1f},{dist:.1f},[{current_beam_as_str}]"
+            f"{self.loop_count:3d},{state},{lx:4.1f},{az:4.1f}, {px:.2f},{py:.2f},{gx:4.1f},{gy:4.1f},{dist:4.1f},[{current_beam_as_str}]"
         )
 
     def create_marker(
