@@ -26,7 +26,7 @@ launch:
       if: "$(var beam)"      
   - node:
       pkg: obper
-      exec: explpre2
-      name: explpre2
+      exec: explore2
+      name: explore2
       output: screen
       if: "$(var explore)"

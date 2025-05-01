@@ -72,12 +72,12 @@ class BeamChecker:
         self.costmap = costmap
 
     def world_to_map(self, x, y):
-        i = int((x - self.origin_x) / self.resolution)
-        j = int((y - self.origin_y) / self.resolution)
+        i = int((x - self.origin_x) / self.resolution)-1
+        j = int((y - self.origin_y) / self.resolution)-1
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
-            print(f"world to map out of dim: {x:.1},{y:.1},{i},{j} cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}")
+            print(f"world to map out of dim: {x:.1},{y:.1},{i},{j}, {self.origin_x:0.1} {self.origin_y:0.1} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]")
             return None
 
     def map_cost(self, i, j):
