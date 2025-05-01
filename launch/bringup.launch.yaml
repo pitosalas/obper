@@ -7,8 +7,8 @@ launch:
       default: 'false'
       description: 'explorer node'
   - arg:
-      name: 'costmap'
-      default: 'true'
+      name: 'beam'
+      default: 'false'
       description: 'costmap node'
 
   - node:
@@ -23,7 +23,7 @@ launch:
       exec: costmap_subscriber
       name: costmap_subscriber
       output: screen
-      if: "$(var costmap)"      
+      if: "$(var beam)"      
   - node:
       pkg: obper
       exec: explpre2

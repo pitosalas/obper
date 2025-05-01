@@ -17,9 +17,39 @@ import numpy as np
 import math
 from builtin_interfaces.msg import Duration
 
+# Description:
+# This script implements a ROS 2 node (`LocalCostmapSubscriber`) that subscribes to a local costmap
+# and performs beam analysis to detect obstacles. The costmap is stored as a 1D array in the `BeamChecker`
+# class, which represents the occupancy grid. The map's dimensions (width, height) and resolution are used
+# to interpret the 1D array as a 2D grid. The node also publishes beam distances and visual markers for
+# visualization in RViz.
+
+# The costmap data is updated in the costmap_callback method of the LocalCostmapSubscriber class, where the msg.data from the OccupancyGrid message is passed to the BeamChecker instance. The BeamChecker uses this data to perform operations like checking beam distances and determining obstacle costs.
+
+# The mapping between 2D grid coordinates (i, j) and the 1D array index is done using the formula:
+# idx = j * self.width + i
+# Here:
+
+# i is the column index.
+# j is the row index.
+# self.width is the number of columns in the grid.
+
+
 class BeamChecker:
     """Logic class for beam checking without ROS dependencies."""
-    def __init__(self, resolution, origin_x, origin_y, width, height, costmap, cost_threshold=50):
+    def __init__(self, resolution: float, origin_x: float, origin_y: float, width: int, height: int, costmap, cost_threshold: int = 50) -> None:
+        """
+        Initialize a CostmapSubscriber instance.
+
+        Args:
+            resolution (float): The resolution of the costmap in meters per cell.
+            origin_x (float): The x-coordinate of the costmap's origin. 
+            origin_y (float): The y-coordinate of the costmap's origin.
+            width (int): The width of the costmap in number of cells.
+            height (int): The height of the costmap in number of cells.
+            costmap: The costmap grid or data structure representing obstacle costs.
+            cost_threshold (int, optional): The cost value threshold to determine obstacles. Defaults to 50.
+        """
         self.resolution = resolution
         self.origin_x = origin_x
         self.origin_y = origin_y
@@ -47,6 +77,7 @@ class BeamChecker:
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
+            print(f"world to map out of dim: {x:.1},{y:.1},{i},{j} cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}")
             return None
 
     def map_cost(self, i, j):
@@ -92,7 +123,7 @@ class LocalCostmapSubscriber(Node):
         self.target_frame = target_frame
         self.source_frame = source_frame
         self.cost_threshold = cost_threshold
-        self.default_max_scan_range = 3.0           # How far to look to find an obstacle
+        self.default_max_scan_range = 2.5           # How far to look to find an obstacle
         self.default_min_crash_distance = 0.5       # just used for color of marker
         self.default_step_size = None
         self.update_counter = 0
