@@ -21,7 +21,6 @@ from tf2_ros import (
 import tf_transformations
 import numpy as np
 import math
-from builtin_interfaces.msg import Duration
 
 # Description:
 # This script implements a ROS 2 node (`LocalCostmapSubscriber`) that subscribes to a local costmap
@@ -52,7 +51,7 @@ class BeamChecker:
         width: int,
         height: int,
         costmap,
-        cost_threshold: int = 50,
+        cost_threshold,
     ) -> None:
         """
         Initialize a CostmapSubscriber instance.
@@ -93,9 +92,9 @@ class BeamChecker:
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
-            print(
-                f"world to map out of dim: {x:.1f},{y:.1f},{i},{j}, {self.origin_x:0.1f} {self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
-            )
+            # print(
+            #     f"world to map out of dim: {x:.1f},{y:.1f},{i},{j}, {self.origin_x:0.1f} {self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
+            # )
             return None
 
     def map_cost(self, i, j):
@@ -103,7 +102,7 @@ class BeamChecker:
         return self.costmap[idx]
 
     def check_beams(
-        self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range=2.5):
+        self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range):
         if self.costmap is None:
             return [None] * len(angles)
         step_size = self.resolution / 2.0
@@ -114,12 +113,14 @@ class BeamChecker:
             global_angle = angle + robot_yaw
             steps = int(max_scan_range / step_size)
             for step in range(steps):
+                # print(f"Check beams step {step}")
                 d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
                 result = self.world_to_map(x, y)
                 # If beam reaches outside map, we assume there's a wall beyond the map — that's the max distance
-                result_outside_map = result is None
+                # result_outside_map = result is None
+                result_outside_map = False
                 # If beam is inside map, we check if the cost is above the threshold (indicating an obstacle)
                 obstacle_in_map = (
                     result and self.map_cost(*result) > self.cost_threshold

@@ -100,7 +100,7 @@ def beam_hits_straight_wall(
     wall_y0,
     wall_angle,
     max_range,
-    wall_bounds=((0, 3), (0, 3)),
+    wall_bounds
 ):
     distances = []
     wx = math.cos(wall_angle)  # Wall direction vector x-component
@@ -147,19 +147,18 @@ def beam_hits_straight_wall(
             # Case 4: Valid intersection within wall bounds
             # Append the distance t to the intersection point
             distances.append(t)
-
     return distances
 
 
 def assert_all_beams(expected, actual, tolerance=0.10):
     for i, (e, a) in enumerate(zip(expected, actual)):
         if not math.isclose(e, a, rel_tol=tolerance):
-            print(f"❌ Beam {i:2d}: {a:.2f}m vs expected {e:.2f}m")
+            print(f"❌ Measured Beam {i:2d}: {a:.2f}m vs expected {e:.2f}m")
         else:
-            print(f"✅ Beam {i:2d}: {a:.2f}m")
+            print(f"✅ Measured Beam {i:2d}: {a:.2f}m")
 
 
-def test_case(name, costmap_msg, robot_x, robot_y, robot_yaw, expected):
+def test_case(name, costmap_msg, robot_x, robot_y, robot_yaw, expected, max_scan_range):
     print(f"\n===== {name} =====")
     beam_checker = BeamChecker(
         resolution=costmap_msg.info.resolution,
@@ -167,47 +166,67 @@ def test_case(name, costmap_msg, robot_x, robot_y, robot_yaw, expected):
         origin_y=costmap_msg.info.origin.position.y,
         width=costmap_msg.info.width,
         height=costmap_msg.info.height,
-        costmap=costmap_msg.data,
+        costmap=costmap_msg.data, 
+        cost_threshold=50
     )
     angles = np.linspace(-math.pi / 2, math.pi / 2, len(expected))
     widths = [0.1] * len(angles)
     print_costmap_with_robot(costmap_msg, robot_x, robot_y)
-    actual = beam_checker.check_beams(robot_x, robot_y, robot_yaw, angles, widths)
+    actual = beam_checker.check_beams(
+        robot_x,
+        robot_y,
+        robot_yaw,
+        angles,
+        widths,
+        max_scan_range
+    )
     assert_all_beams(expected, actual)
 
 
 def main():
     map_w, map_h, res = 3.0, 3.0, 0.05
     angles = np.linspace(-math.pi / 2, math.pi / 2, 9)
-    max_range = 2.5
+    max_range = 3.0
+# Test 1
+#     x1, y1, yaw1 = 1.5, 1.5, 0.0
+#     msg1 = create_empty_costmap(map_w, map_h, res)
+#     wall_x = 3.0
+#     wall_y = 0.0
+#     add_vertical_wall(msg1, wall_x)
+#     expected1 = beam_hits_straight_wall(
+#         x1, y1, yaw1, angles, wall_x, wall_y, math.pi / 2, max_range
+#     )
+#     test_case("Test 1", msg1, x1, y1, yaw1, expected1, max_range)
+# # Test 2
+#     x2, y2, yaw2 = 1.5, 1.0, math.pi/2
+#     msg2 = create_empty_costmap(map_w, map_h, res)
+#     add_horizontal_wall(msg2, 2.0)
+#     expected2 = beam_hits_straight_wall(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range)
+#     test_case("Test 2", msg2, x2, y2, yaw2, expected2, max_range)
+# Test 3
 
-    x1, y1, yaw1 = 2.0, 1.5, 0.0
-    msg1 = create_empty_costmap(map_w, map_h, res)
-    wall_x = 3.0
-    wall_y = 0.0
-    add_vertical_wall(msg1, wall_x)
-    expected1 = beam_hits_straight_wall(
-        x1, y1, yaw1, angles, wall_x, wall_y, math.pi / 2, max_range
-    )
-    test_case("Vertical Wall 1", msg1, x1, y1, yaw1, expected1)
+#    robot_x,
+#     robot_y,
+#     robot_yaw,
+#     beam_angles,
+#     wall_x0,
+#     wall_y0,
+#     wall_angle,
+#     max_range,
+#     wall_bounds
 
-    # x2, y2, yaw2 = 1.5, 1.0, math.pi/2
-    # msg2 = create_empty_costmap(map_w, map_h, res)
-    # add_horizontal_wall(msg2, 2.0)
-    # expected2 = beam_hits_straight_wall(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range)
-    # test_case("Horizontal Wall at y=2.0", msg2, x2, y2, yaw2, expected2)
 
-    # x3, y3, yaw3 = 0.5, 2.0, 0.0
-    # msg3 = create_empty_costmap(map_w, map_h, res)
-    # add_diagonal_wall(msg3, '/')
-    # expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, 3.0, -math.pi/4, max_range)
-    # test_case("Diagonal Wall (/)", msg3, x3, y3, yaw3, expected3)
-
-    # x4, y4, yaw4 = 1.5, 1.5, 0.0
-    # msg4 = create_empty_costmap(map_w, map_h, res)
-    # add_box_around(msg4, x4, y4, radius_m=0.05)
-    # expected4 = [0.05] * len(angles)
-    # test_case("Robot in Tight Wall Box (0.05m)", msg4, x4, y4, yaw4, expected4)
+    x3, y3, yaw3 = 0.5, 2.0, 0.0
+    msg3 = create_empty_costmap(map_w, map_h, res)
+    add_diagonal_wall(msg3, '/')
+    expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, max_range, -math.pi/4, max_range)
+    test_case("Test 3", msg3, x3, y3, yaw3, expected3, max_range)
+# # Test 4
+#     x4, y4, yaw4 = 1.5, 1.5, 0.0
+#     msg4 = create_empty_costmap(map_w, map_h, res)
+#     add_box_around(msg4, x4, y4, radius_m=0.05)
+#     expected4 = [0.05] * len(angles)
+#     test_case("Test 4", msg4, x4, y4, yaw4, expected4, max_range)
 
 
 if __name__ == "__main__":
