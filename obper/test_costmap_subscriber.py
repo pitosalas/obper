@@ -186,6 +186,7 @@ def test_case(name, costmap_msg, robot_x, robot_y, robot_yaw, expected, max_scan
 def main():
     map_w, map_h, res = 3.0, 3.0, 0.05
     angles = np.linspace(-math.pi / 2, math.pi / 2, 9)
+    wall_bounds = ((0.0, map_w), (0.0, map_h))    
     max_range = 3.0
 # Test 1
 #     x1, y1, yaw1 = 1.5, 1.5, 0.0
@@ -216,10 +217,10 @@ def main():
 #     wall_bounds
 
 
-    x3, y3, yaw3 = 0.5, 2.0, 0.0
+    x3, y3, yaw3 = 0.0, 1.0, 0.0
     msg3 = create_empty_costmap(map_w, map_h, res)
     add_diagonal_wall(msg3, '/')
-    expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, max_range, -math.pi/4, max_range)
+    expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, 3.0, -math.pi*3/4, max_range, wall_bounds)
     test_case("Test 3", msg3, x3, y3, yaw3, expected3, max_range)
 # # Test 4
 #     x4, y4, yaw4 = 1.5, 1.5, 0.0
@@ -227,7 +228,6 @@ def main():
 #     add_box_around(msg4, x4, y4, radius_m=0.05)
 #     expected4 = [0.05] * len(angles)
 #     test_case("Test 4", msg4, x4, y4, yaw4, expected4, max_range)
-
 
 if __name__ == "__main__":
     main()

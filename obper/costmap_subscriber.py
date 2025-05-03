@@ -87,8 +87,10 @@ class BeamChecker:
         self.costmap = costmap
 
     def world_to_map(self, x, y):
-        i = int((x - self.origin_x) / self.resolution)
-        j = int((y - self.origin_y) / self.resolution)
+        # i = int((x - self.origin_x) / self.resolution)
+        # j = int((y - self.origin_y) / self.resolution)
+        i = round((x - self.origin_x) / self.resolution)
+        j = round((y - self.origin_y) / self.resolution)
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
@@ -105,7 +107,7 @@ class BeamChecker:
         self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range):
         if self.costmap is None:
             return [None] * len(angles)
-        step_size = self.resolution / 2.0
+        step_size = self.resolution / 3.0
 
         distances = []
         for angle, spread in zip(angles, widths):
