@@ -65,31 +65,33 @@ def add_box_around(costmap_msg, x_m, y_m, radius_m):
     mark_cells(costmap_msg, wall)
 
 
-def print_costmap_with_robot(costmap_msg, robot_x, robot_y, robot_marker="R"):
+def print_costmap_with_robot(costmap_msg, robot_x, robot_y):
+    """
+    Prints the costmap to the console using ASCII characters, marking the robot position.
+    Assumes bottom-left origin and standard ROS axis: +x right, +y up.
+    
+    '#' = obstacle (>=100), '.' = free (<100), 'R' = robot
+    """
     width = costmap_msg.info.width
     height = costmap_msg.info.height
     resolution = costmap_msg.info.resolution
-    origin_x = costmap_msg.info.origin.position.x
-    origin_y = costmap_msg.info.origin.position.y
     data = costmap_msg.data
 
-    i_robot = int((robot_x - origin_x) / resolution)
-    j_robot = int((robot_y - origin_y) / resolution)
+    # Convert robot's world coordinates to map grid indices
+    rx = int(robot_x / resolution)
+    ry = int(robot_y / resolution)
 
-    print("\nCostmap (0=free, #=obstacle, R=robot):")
-    for j in reversed(range(height)):
-        row = ""
-        for i in range(width):
-            idx = j * width + i
-            if i == i_robot and j == j_robot:
-                row += robot_marker
-            elif data[idx] > 50:
-                row += "#"
+    for y in reversed(range(height)):  # Print from top row to bottom
+        row = ''
+        for x in range(width):
+            i = y * width + x
+            if x == rx and y == ry:
+                row += 'R'
+            elif data[i] >= 100:
+                row += '#'
             else:
-                row += "."
+                row += '.'
         print(row)
-    print()
-
 
 def beam_hits_straight_wall(
     robot_x,
@@ -189,45 +191,34 @@ def main():
     wall_bounds = ((0.0, map_w), (0.0, map_h))    
     max_range = 3.0
 # Test 1
-#     x1, y1, yaw1 = 1.5, 1.5, 0.0
-#     msg1 = create_empty_costmap(map_w, map_h, res)
-#     wall_x = 3.0
-#     wall_y = 0.0
-#     add_vertical_wall(msg1, wall_x)
-#     expected1 = beam_hits_straight_wall(
-#         x1, y1, yaw1, angles, wall_x, wall_y, math.pi / 2, max_range
-#     )
-#     test_case("Test 1", msg1, x1, y1, yaw1, expected1, max_range)
-# # Test 2
-#     x2, y2, yaw2 = 1.5, 1.0, math.pi/2
-#     msg2 = create_empty_costmap(map_w, map_h, res)
-#     add_horizontal_wall(msg2, 2.0)
-#     expected2 = beam_hits_straight_wall(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range)
-#     test_case("Test 2", msg2, x2, y2, yaw2, expected2, max_range)
-# Test 3
+    x1, y1, yaw1 = 1.5, 1.5, 0.0
+    msg1 = create_empty_costmap(map_w, map_h, res)
+    wall_x = 3.0
+    wall_y = 0.0
+    add_vertical_wall(msg1, wall_x)
+    expected1 = beam_hits_straight_wall(
+        x1, y1, yaw1, angles, wall_x, wall_y, math.pi / 2, max_range, wall_bounds
+    )
+    test_case("Test 1", msg1, x1, y1, yaw1, expected1, max_range)
+# Test 2
+    x2, y2, yaw2 = 1.5, 1.0, math.pi/2
+    msg2 = create_empty_costmap(map_w, map_h, res)
+    add_horizontal_wall(msg2, 2.0)
+    expected2 = beam_hits_straight_wall(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range, wall_bounds)
+    test_case("Test 2", msg2, x2, y2, yaw2, expected2, max_range)
+# # Test 3
+#     x3, y3, yaw3 = 0.0, 1.0, 0.0
+#     msg3 = create_empty_costmap(map_w, map_h, res)
+#     add_diagonal_wall(msg3, '/')
+#     expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, 3.0, -math.pi*3/4, max_range, wall_bounds)
+#     test_case("Test 3", msg3, x3, y3, yaw3, expected3, max_range)
+# Test 4
 
-#    robot_x,
-#     robot_y,
-#     robot_yaw,
-#     beam_angles,
-#     wall_x0,
-#     wall_y0,
-#     wall_angle,
-#     max_range,
-#     wall_bounds
-
-
-    x3, y3, yaw3 = 0.0, 1.0, 0.0
-    msg3 = create_empty_costmap(map_w, map_h, res)
-    add_diagonal_wall(msg3, '/')
-    expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, 3.0, -math.pi*3/4, max_range, wall_bounds)
-    test_case("Test 3", msg3, x3, y3, yaw3, expected3, max_range)
-# # Test 4
-#     x4, y4, yaw4 = 1.5, 1.5, 0.0
-#     msg4 = create_empty_costmap(map_w, map_h, res)
-#     add_box_around(msg4, x4, y4, radius_m=0.05)
-#     expected4 = [0.05] * len(angles)
-#     test_case("Test 4", msg4, x4, y4, yaw4, expected4, max_range)
+    x4, y4, yaw4 = 1.5, 1.5, 0.0
+    msg4 = create_empty_costmap(map_w, map_h, res)
+    add_box_around(msg4, x4, y4, radius_m=0.05)
+    expected4 = [0.05] * len(angles)
+    test_case("Test 4", msg4, x4, y4, yaw4, expected4, max_range)
 
 if __name__ == "__main__":
     main()
