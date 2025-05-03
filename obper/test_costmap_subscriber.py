@@ -10,6 +10,7 @@ import numpy as np
 from nav_msgs.msg import OccupancyGrid
 from obper.costmap_subscriber import BeamChecker
 
+
 # Create an empty OccupancyGrid with given physical size and resolution.
 # width_m and height_m are in meters; resolution is meters per cell.
 # Returns an OccupancyGrid with all cells set to 0 (free).
@@ -26,6 +27,7 @@ def create_empty_costmap(width_m: float, height_m: float, resolution: float) -> 
     msg.data = [0] * (width * height)  # 0 = free
     return msg
 
+
 # Mark specified (i, j) grid cells as occupied in the OccupancyGrid.
 # Each (i, j) is a column,row index into the 2D grid. Value defaults to 100 (occupied).
 def mark_cells(costmap_msg: OccupancyGrid, cells: list[tuple[int, int]], value: int = 100) -> None:
@@ -36,11 +38,13 @@ def mark_cells(costmap_msg: OccupancyGrid, cells: list[tuple[int, int]], value: 
         else:
             print(f'Error in mark_cells {i},{j}')
 
+
 # add_vertical_wall: Add a vertical wall at x_m (in meters) by marking a full column in the costmap as occupied.
 def add_vertical_wall(costmap_msg, x_m):
     i = round(x_m / costmap_msg.info.resolution)
-    i = max(0, min(i, costmap_msg.info.width - 1)) 
+    i = max(0, min(i, costmap_msg.info.width - 1))
     mark_cells(costmap_msg, [(i, j) for j in range(costmap_msg.info.height)])
+
 
 # add_horizontal_wall: wall at y_m (in meters) by marking a full row in the costmap as occupied.
 def add_horizontal_wall(costmap_msg: OccupancyGrid, y_m: float) -> None:
@@ -48,18 +52,20 @@ def add_horizontal_wall(costmap_msg: OccupancyGrid, y_m: float) -> None:
     j = max(0, min(j, costmap_msg.info.height - 1))  # Clamp to valid grid index
     mark_cells(costmap_msg, [(i, j) for i in range(costmap_msg.info.width)])
 
+
 # add_diagonal_wall: Mark a diagonal line of obstacles across the costmap from "/" or "\\" direction.
-def add_diagonal_wall(costmap_msg: OccupancyGrid, direction: str = "/") -> None:
+def add_diagonal_wall(costmap_msg: OccupancyGrid, direction: str = '/') -> None:
     w = costmap_msg.info.width
     h = costmap_msg.info.height
     size = min(w, h)
-    if direction == "/":
+    if direction == '/':
         cells = [(i, h - 1 - i) for i in range(size)]  # top-left to bottom-right
-    elif direction == "\\":
-        cells = [(i, i) for i in range(size)]          # bottom-left to top-right
+    elif direction == '\\':
+        cells = [(i, i) for i in range(size)]  # bottom-left to top-right
     else:
         raise ValueError(f"Invalid diagonal direction: {direction!r}. Use '/' or '\\\\'.")
     mark_cells(costmap_msg, cells)
+
 
 # add_box_around: Mark a square obstacle centered at (x_m, y_m) with total width in meters.
 def add_box_around(costmap_msg: OccupancyGrid, x_m: float, y_m: float, width_m: float) -> None:
@@ -74,37 +80,29 @@ def add_box_around(costmap_msg: OccupancyGrid, x_m: float, y_m: float, width_m: 
         if abs(dx) == half or abs(dy) == half
     ]
     mark_cells(costmap_msg, wall)
-    
-def print_costmap_with_robot(costmap_msg, robot_x, robot_y):
-    """
-    Prints the costmap to the console using ASCII characters, marking the robot position.
-    Assumes bottom-left origin and standard ROS axis: +x right, +y up.
 
-    '#' = obstacle (>=100), '.' = free (<100), 'R' = robot
-    """
+
+# print_costmap_with_robot: Print the costmap as ASCII, marking obstacles and robot position.
+def print_costmap_with_robot(costmap_msg: OccupancyGrid, robot_x: float, robot_y: float) -> None:
     width = costmap_msg.info.width
     height = costmap_msg.info.height
     resolution = costmap_msg.info.resolution
     data = costmap_msg.data
-
-    # Convert robot's world coordinates to map grid indices
     rx = int(robot_x / resolution)
     ry = int(robot_y / resolution)
-
-    for y in reversed(range(height)):  # Print from top row to bottom
-        row = ''
+    for y in reversed(range(height)):
+        row = ""
         for x in range(width):
             i = y * width + x
             if x == rx and y == ry:
-                row += 'R'
+                row += "R"
             elif data[i] >= 100:
-                row += '#'
+                row += "#"
             else:
-                row += '.'
+                row += "."
         print(row)
 
-
-def beam_hits_straight_wall(
+def beam_distances_to_wall_segment(
     robot_x,
     robot_y,
     robot_yaw,
@@ -116,8 +114,8 @@ def beam_hits_straight_wall(
     wall_bounds,
 ):
     distances = []
-    wx = math.cos(wall_angle)  # Wall direction vector x-component
-    wy = math.sin(wall_angle)  # Wall direction vector y-component
+    wx = math.cos(wall_angle)       # Wall direction vector x-component
+    wy = math.sin(wall_angle)       # Wall direction vector y-component
 
     for angle in beam_angles:
         # Compute beam direction vector
@@ -200,7 +198,7 @@ def main():
     wall_x = 3.0
     wall_y = 0.0
     add_vertical_wall(msg1, wall_x)
-    expected1 = beam_hits_straight_wall(
+    expected1 = beam_distances_to_wall_segment(
         x1, y1, yaw1, angles, wall_x, wall_y, math.pi / 2, max_range, wall_bounds
     )
     test_case('Test 1', msg1, x1, y1, yaw1, expected1, max_range)
@@ -208,7 +206,7 @@ def main():
     x2, y2, yaw2 = 1.5, 1.0, math.pi / 2
     msg2 = create_empty_costmap(map_w, map_h, res)
     add_horizontal_wall(msg2, 2.0)
-    expected2 = beam_hits_straight_wall(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range, wall_bounds)
+    expected2 = beam_distances_to_wall_segment(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range, wall_bounds)
     test_case('Test 2', msg2, x2, y2, yaw2, expected2, max_range)
     # # Test 3
     #     x3, y3, yaw3 = 0.0, 1.0, 0.0
@@ -219,10 +217,9 @@ def main():
     # Test 4
     x4, y4, yaw4 = 1.5, 1.5, 0.0
     msg4 = create_empty_costmap(map_w, map_h, res)
-    add_box_around(msg4, x4, y4, radius_m=0.05)
+    add_box_around(costmap_msg=msg4, x_m=x4, y_m=y4, width_m=0.10)
     expected4 = [0.05] * len(angles)
     test_case('Test 4', msg4, x4, y4, yaw4, expected4, max_range)
-
 
 if __name__ == '__main__':
     main()
