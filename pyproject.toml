@@ -11,6 +11,7 @@ extend-select = [
   "C4",  # comprehensions
   "PT",  # pytest style
 ]
+ignore = ["B905"]
 
 [tool.ruff.format]
 quote-style = "single"

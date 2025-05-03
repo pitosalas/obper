@@ -1,177 +1,150 @@
-#!/usr/bin/env python3
 # File: obper/test_costmap_subscriber.py
-# Authors: Pito Salas and ChatGPT
 # License: MIT
-# Version: 2.3
-# Last Revised: 2025-05-01
+# Authors: Pito Salas and ChatGPT
+# Version: 2.4
+# Last Revised: 2025-05-03
 
+from dataclasses import dataclass
 import math
 import numpy as np
 from nav_msgs.msg import OccupancyGrid
 from obper.costmap_subscriber import BeamChecker
 
+# Pose: robot position and orientation
+@dataclass
+class Pose:
+    x: float
+    y: float
+    yaw: float
 
-# Create an empty OccupancyGrid with given physical size and resolution.
-# width_m and height_m are in meters; resolution is meters per cell.
-# Returns an OccupancyGrid with all cells set to 0 (free).
+# WallSegment: infinite line + bounding box
+@dataclass
+class WallSegment:
+    x0: float
+    y0: float
+    angle: float
+    bounds: ((float, float), (float, float))
+
+# beam_distances_to_wall_segment: return distances where beams hit a wall segment or max_range
+def beam_distances_to_wall_segment(
+    robot_pose: Pose,
+    beam_angles: list[float],
+    wall: WallSegment,
+    max_range: float
+) -> list[float]:
+    distances = []
+    wx = math.cos(wall.angle)
+    wy = math.sin(wall.angle)
+    for angle in beam_angles:
+        dx = math.cos(robot_pose.yaw + angle)
+        dy = math.sin(robot_pose.yaw + angle)
+        denom = dx * wy - dy * wx
+        if abs(denom) < 1e-8:
+            distances.append(max_range)
+            continue
+        dx0 = wall.x0 - robot_pose.x
+        dy0 = wall.y0 - robot_pose.y
+        t = (dx0 * wy - dy0 * wx) / denom
+        if t < 0 or t > max_range:
+            distances.append(max_range)
+            continue
+        x_hit = robot_pose.x + t * dx
+        y_hit = robot_pose.y + t * dy
+        (xmin, xmax), (ymin, ymax) = wall.bounds
+        if not (xmin <= x_hit <= xmax and ymin <= y_hit <= ymax):
+            distances.append(max_range)
+        else:
+            distances.append(t)
+    return distances
+
+# create_empty_costmap: return free costmap grid
 def create_empty_costmap(width_m: float, height_m: float, resolution: float) -> OccupancyGrid:
-    width = int(width_m / resolution)  # cells in x
-    height = int(height_m / resolution)  # cells in y
-
+    width = int(width_m / resolution)
+    height = int(height_m / resolution)
     msg = OccupancyGrid()
-    msg.info.width = width  # info.width is width of map in number cells
-    msg.info.height = height  # info.height is height of map in number of cells
+    msg.info.width = width
+    msg.info.height = height
     msg.info.resolution = resolution
     msg.info.origin.position.x = 0.0
     msg.info.origin.position.y = 0.0
-    msg.data = [0] * (width * height)  # 0 = free
+    msg.data = [0] * (width * height)
     return msg
 
-
-# Mark specified (i, j) grid cells as occupied in the OccupancyGrid.
-# Each (i, j) is a column,row index into the 2D grid. Value defaults to 100 (occupied).
-def mark_cells(costmap_msg: OccupancyGrid, cells: list[tuple[int, int]], value: int = 100) -> None:
+# mark_cells: set specific grid cells to a value
+def mark_cells(msg: OccupancyGrid, cells: list[tuple[int, int]], value: int = 100):
     for i, j in cells:
-        if 0 <= i < costmap_msg.info.width and 0 <= j < costmap_msg.info.height:
-            idx = j * costmap_msg.info.width + i
-            costmap_msg.data[idx] = value
-        else:
-            print(f'Error in mark_cells {i},{j}')
+        if 0 <= i < msg.info.width and 0 <= j < msg.info.height:
+            idx = j * msg.info.width + i
+            msg.data[idx] = value
 
+# add_vertical_wall: mark vertical obstacle
+def add_vertical_wall(msg: OccupancyGrid, x_m: float):
+    i = round(x_m / msg.info.resolution)
+    i = max(0, min(i, msg.info.width - 1))
+    mark_cells(msg, [(i, j) for j in range(msg.info.height)])
 
-# add_vertical_wall: Add a vertical wall at x_m (in meters) by marking a full column in the costmap as occupied.
-def add_vertical_wall(costmap_msg, x_m):
-    i = round(x_m / costmap_msg.info.resolution)
-    i = max(0, min(i, costmap_msg.info.width - 1))
-    mark_cells(costmap_msg, [(i, j) for j in range(costmap_msg.info.height)])
+# add_horizontal_wall: mark horizontal obstacle
+def add_horizontal_wall(msg: OccupancyGrid, y_m: float):
+    j = round(y_m / msg.info.resolution)
+    j = max(0, min(j, msg.info.height - 1))
+    mark_cells(msg, [(i, j) for i in range(msg.info.width)])
 
-
-# add_horizontal_wall: wall at y_m (in meters) by marking a full row in the costmap as occupied.
-def add_horizontal_wall(costmap_msg: OccupancyGrid, y_m: float) -> None:
-    j = round(y_m / costmap_msg.info.resolution)
-    j = max(0, min(j, costmap_msg.info.height - 1))  # Clamp to valid grid index
-    mark_cells(costmap_msg, [(i, j) for i in range(costmap_msg.info.width)])
-
-
-# add_diagonal_wall: Mark a diagonal line of obstacles across the costmap from "/" or "\\" direction.
-def add_diagonal_wall(costmap_msg: OccupancyGrid, direction: str = '/') -> None:
-    w = costmap_msg.info.width
-    h = costmap_msg.info.height
+# add_diagonal_wall: mark diagonal line
+def add_diagonal_wall(msg: OccupancyGrid, direction: str = '/'):
+    w = msg.info.width
+    h = msg.info.height
     size = min(w, h)
     if direction == '/':
-        cells = [(i, h - 1 - i) for i in range(size)]  # top-left to bottom-right
+        cells = [(i, h - 1 - i) for i in range(size)]
     elif direction == '\\':
-        cells = [(i, i) for i in range(size)]  # bottom-left to top-right
+        cells = [(i, i) for i in range(size)]
     else:
-        raise ValueError(f"Invalid diagonal direction: {direction!r}. Use '/' or '\\\\'.")
-    mark_cells(costmap_msg, cells)
+        raise ValueError(f"bad direction {direction}")
+    mark_cells(msg, cells)
 
-
-# add_box_around: Mark a square obstacle centered at (x_m, y_m) with total width in meters.
-def add_box_around(costmap_msg: OccupancyGrid, x_m: float, y_m: float, width_m: float) -> None:
-    res = costmap_msg.info.resolution
+# add_box_around: mark square border around point
+def add_box_around(msg: OccupancyGrid, x_m: float, y_m: float, width_m: float):
+    res = msg.info.resolution
     i0 = round(x_m / res)
     j0 = round(y_m / res)
     half = round((width_m / 2) / res)
-    wall = [
-        (i0 + dx, j0 + dy)
-        for dx in range(-half, half + 1)
-        for dy in range(-half, half + 1)
-        if abs(dx) == half or abs(dy) == half
-    ]
-    mark_cells(costmap_msg, wall)
+    wall = [(i0 + dx, j0 + dy)
+            for dx in range(-half, half + 1)
+            for dy in range(-half, half + 1)
+            if abs(dx) == half or abs(dy) == half]
+    mark_cells(msg, wall)
 
-
-# print_costmap_with_robot: Print the costmap as ASCII, marking obstacles and robot position.
-def print_costmap_with_robot(costmap_msg: OccupancyGrid, robot_x: float, robot_y: float) -> None:
-    width = costmap_msg.info.width
-    height = costmap_msg.info.height
-    resolution = costmap_msg.info.resolution
-    data = costmap_msg.data
-    rx = int(robot_x / resolution)
-    ry = int(robot_y / resolution)
-    for y in reversed(range(height)):
+# print_costmap_with_robot: ASCII map for debugging
+def print_costmap_with_robot(msg: OccupancyGrid, rx: float, ry: float):
+    w = msg.info.width
+    h = msg.info.height
+    res = msg.info.resolution
+    ix = int(rx / res)
+    iy = int(ry / res)
+    for j in reversed(range(h)):
         row = ""
-        for x in range(width):
-            i = y * width + x
-            if x == rx and y == ry:
+        for i in range(w):
+            idx = j * w + i
+            if i == ix and j == iy:
                 row += "R"
-            elif data[i] >= 100:
+            elif msg.data[idx] >= 100:
                 row += "#"
             else:
                 row += "."
         print(row)
 
-def beam_distances_to_wall_segment(
-    robot_x,
-    robot_y,
-    robot_yaw,
-    beam_angles,
-    wall_x0,
-    wall_y0,
-    wall_angle,
-    max_range,
-    wall_bounds,
-):
-    distances = []
-    wx = math.cos(wall_angle)       # Wall direction vector x-component
-    wy = math.sin(wall_angle)       # Wall direction vector y-component
-
-    for angle in beam_angles:
-        # Compute beam direction vector
-        dx = math.cos(robot_yaw + angle)
-        dy = math.sin(robot_yaw + angle)
-
-        # Compute denominator of the intersection formula
-        denom = dx * wy - dy * wx
-
-        if abs(denom) < 1e-8:
-            # Case 1: Beam is parallel to the wall (no intersection)
-            # Append max_range to indicate no intersection within range
-            distances.append(max_range)
-            continue
-
-        # Vector from robot to a point on the wall
-        dx0 = wall_x0 - robot_x
-        dy0 = wall_y0 - robot_y
-
-        # Compute parameter t along the beam direction where intersection occurs
-        t = (dx0 * wy - dy0 * wx) / denom
-
-        if t < 0 or t > max_range:
-            # Case 2: Intersection point is behind the robot or beyond max_range
-            # Append max_range to indicate no valid intersection within range
-            distances.append(max_range)
-            continue
-
-        # Compute the intersection point coordinates
-        x_hit = robot_x + t * dx
-        y_hit = robot_y + t * dy
-
-        # Check if the intersection point lies within the wall bounds
-        (xmin, xmax), (ymin, ymax) = wall_bounds
-        if not (xmin <= x_hit <= xmax and ymin <= y_hit <= ymax):
-            # Case 3: Intersection point is outside the wall segment
-            # Append max_range to indicate intersection is outside wall bounds
-            distances.append(max_range)
-        else:
-            # Case 4: Valid intersection within wall bounds
-            # Append the distance t to the intersection point
-            distances.append(t)
-    return distances
-
-
+# assert_all_beams: print check vs expected
 def assert_all_beams(expected, actual, tolerance=0.10):
     for i, (e, a) in enumerate(zip(expected, actual)):
-        if not math.isclose(e, a, rel_tol=tolerance):
-            print(f'❌ Measured Beam {i:2d}: {a:.2f}m vs expected {e:.2f}m')
+        if not math.isclose(e, a, abs_tol=tolerance):
+            print(f'❌ Beam {i:2d}: {a:.2f}m vs expected {e:.2f}m')
         else:
-            print(f'✅ Measured Beam {i:2d}: {a:.2f}m')
+            print(f'✅ Beam {i:2d}: {a:.2f}m')
 
-
-def test_case(name, costmap_msg, robot_x, robot_y, robot_yaw, expected, max_scan_range):
+# test_case: run one beam test
+def test_case(name: str, costmap_msg: OccupancyGrid, pose: Pose, expected: list[float], max_scan_range: float):
     print(f'\n===== {name} =====')
-    beam_checker = BeamChecker(
+    checker = BeamChecker(
         resolution=costmap_msg.info.resolution,
         origin_x=costmap_msg.info.origin.position.x,
         origin_y=costmap_msg.info.origin.position.y,
@@ -182,44 +155,52 @@ def test_case(name, costmap_msg, robot_x, robot_y, robot_yaw, expected, max_scan
     )
     angles = np.linspace(-math.pi / 2, math.pi / 2, len(expected))
     widths = [0.1] * len(angles)
-    print_costmap_with_robot(costmap_msg, robot_x, robot_y)
-    actual = beam_checker.check_beams(robot_x, robot_y, robot_yaw, angles, widths, max_scan_range)
+    print_costmap_with_robot(costmap_msg, pose.x, pose.y)
+    actual = checker.check_beams(pose.x, pose.y, pose.yaw, angles, widths, max_scan_range)
     assert_all_beams(expected, actual)
 
-
+# main: define and run test cases
 def main():
     map_w, map_h, res = 3.0, 3.0, 0.05
-    angles = np.linspace(-math.pi / 2, math.pi / 2, 9)
-    wall_bounds = ((0.0, map_w), (0.0, map_h))
     max_range = 3.0
+    wall_bounds = ((0.0, map_w), (0.0, map_h))
+    angles = np.linspace(-math.pi / 2, math.pi / 2, 9)
+
     # Test 1
-    x1, y1, yaw1 = 1.5, 1.5, 0.0
+    pose1 = Pose(1.5, 1.5, 0.0)
     msg1 = create_empty_costmap(map_w, map_h, res)
-    wall_x = 3.0
-    wall_y = 0.0
-    add_vertical_wall(msg1, wall_x)
-    expected1 = beam_distances_to_wall_segment(
-        x1, y1, yaw1, angles, wall_x, wall_y, math.pi / 2, max_range, wall_bounds
-    )
-    test_case('Test 1', msg1, x1, y1, yaw1, expected1, max_range)
+    add_vertical_wall(msg1, 3.0)
+    wall1 = WallSegment(3.0, 0.0, math.pi / 2, wall_bounds)
+    expected1 = beam_distances_to_wall_segment(pose1, angles.tolist(), wall1, max_range)
+    test_case("Test 1", msg1, pose1, expected1, max_range)
+
     # Test 2
-    x2, y2, yaw2 = 1.5, 1.0, math.pi / 2
+    pose2 = Pose(1.5, 1.0, math.pi / 2)
     msg2 = create_empty_costmap(map_w, map_h, res)
     add_horizontal_wall(msg2, 2.0)
-    expected2 = beam_distances_to_wall_segment(x2, y2, yaw2, angles, 0.0, 2.0, 0.0, max_range, wall_bounds)
-    test_case('Test 2', msg2, x2, y2, yaw2, expected2, max_range)
-    # # Test 3
-    #     x3, y3, yaw3 = 0.0, 1.0, 0.0
-    #     msg3 = create_empty_costmap(map_w, map_h, res)
-    #     add_diagonal_wall(msg3, '/')
-    #     expected3 = beam_hits_straight_wall(x3, y3, yaw3, angles, 0.0, 3.0, -math.pi*3/4, max_range, wall_bounds)
-    #     test_case("Test 3", msg3, x3, y3, yaw3, expected3, max_range)
-    # Test 4
-    x4, y4, yaw4 = 1.5, 1.5, 0.0
-    msg4 = create_empty_costmap(map_w, map_h, res)
-    add_box_around(costmap_msg=msg4, x_m=x4, y_m=y4, width_m=0.10)
-    expected4 = [0.05] * len(angles)
-    test_case('Test 4', msg4, x4, y4, yaw4, expected4, max_range)
+    wall2 = WallSegment(0.0, 2.0, 0.0, wall_bounds)
+    expected2 = beam_distances_to_wall_segment(pose2, angles.tolist(), wall2, max_range)
+    test_case("Test 2", msg2, pose2, expected2, max_range)
 
-if __name__ == '__main__':
+    # Test 3
+    pose3 = Pose(1.5, 1.5, 0.0)
+    msg3 = create_empty_costmap(map_w, map_h, res)
+    add_box_around(msg3, pose3.x, pose3.y, 0.10)
+    expected3 = [0.05] * len(angles)
+    test_case("Test 3", msg3, pose3, expected3, max_range)
+
+    # Test 4: diagonal wall (/ direction)
+    pose4 = Pose(0.0, 1.0, 0.0)
+    msg4 = create_empty_costmap(map_w, map_h, res)
+    add_diagonal_wall(msg4, '/')
+    wall4 = WallSegment(
+        x0=map_w / 2,
+        y0=map_h / 2,
+        angle=-math.pi * 3 / 4,
+        bounds=((0.0, map_w), (0.0, map_h))
+    )
+    expected4 = beam_distances_to_wall_segment(pose4, angles.tolist(), wall4, max_range)
+    test_case("Test 4", msg4, pose4, expected4, max_range)
+
+if __name__ == "__main__":
     main()
