@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"            # Match your Python version
+extend-select = [
+  "F",   # Pyflakes
+  "E",   # pycodestyle (errors)
+  "W",   # pycodestyle (warnings)
+  "B",   # flake8-bugbear
+  "UP",  # pyupgrade
+  "N",   # pep8-naming
+  "C4",  # comprehensions
+  "PT",  # pytest style
+]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
