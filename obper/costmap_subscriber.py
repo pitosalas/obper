@@ -94,23 +94,23 @@ class BeamChecker:
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
-            # print(
-            #     f"world to map out of dim: {x:.1f},{y:.1f},{i},{j}, {self.origin_x:0.1f} {self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
-            # )
+            print(
+                f"world to map out of dim: {x:.1f},{y:.1f},{i},{j}, {self.origin_x:0.1f}"
+                "{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
+            )
             return None
 
     def map_cost(self, i, j):
         idx = j * self.width + i
         return self.costmap[idx]
 
-    def check_beams(
-        self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range):
+    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range):
         if self.costmap is None:
             return [None] * len(angles)
         step_size = self.resolution / 3.0
 
         distances = []
-        for angle, spread in zip(angles, widths):
+        for angle, _ in zip(angles, widths):
             distance = max_scan_range
             global_angle = angle + robot_yaw
             steps = int(max_scan_range / step_size)
@@ -124,9 +124,7 @@ class BeamChecker:
                 # result_outside_map = result is None
                 result_outside_map = False
                 # If beam is inside map, we check if the cost is above the threshold (indicating an obstacle)
-                obstacle_in_map = (
-                    result and self.map_cost(*result) > self.cost_threshold
-                )
+                obstacle_in_map = result and self.map_cost(*result) > self.cost_threshold
                 if result_outside_map or obstacle_in_map:
                     distance = d
                     break
@@ -184,9 +182,7 @@ class LocalCostmapSubscriber(Node):
                 costmap=msg.data,
                 cost_threshold=self.cost_threshold,
             )
-            self.get_logger().info(
-                f"Initialized BeamChecker (cb: {self.update_counter})."
-            )
+            self.get_logger().info(f"Initialized BeamChecker (cb: {self.update_counter}).")
         else:
             self.get_logger().info(f"Updated BeamChecker (cb: {self.update_counter})")
             self.beam_checker.update_data(msg.data)
@@ -202,9 +198,7 @@ class LocalCostmapSubscriber(Node):
             )
             t = transform.transform.translation
             q = transform.transform.rotation
-            roll, pitch, yaw = tf_transformations.euler_from_quaternion(
-                [q.x, q.y, q.z, q.w]
-            )
+            roll, pitch, yaw = tf_transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])
             return t.x, t.y, yaw
         except (LookupException, ConnectivityException, ExtrapolationException):
             self.get_logger().warn("TF lookup failed.")
