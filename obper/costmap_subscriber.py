@@ -141,7 +141,7 @@ class LocalCostmapSubscriber(Node):
         self,
         tf_buffer=None,
         timer_period=0.5,
-        cost_threshold=50,
+        cost_threshold=75,
         target_frame="odom",
         source_frame="base_link",
         create_timer=True,
