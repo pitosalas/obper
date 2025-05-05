@@ -96,7 +96,7 @@ class BeamChecker:
         else:
             print(
                 f"world to map out of dim: {x:.1f},{y:.1f},{i},{j}, {self.origin_x:0.1f}"
-                "{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
+                f"{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
             )
             return None
 
@@ -115,14 +115,16 @@ class BeamChecker:
             global_angle = angle + robot_yaw
             steps = int(max_scan_range / step_size)
             for step in range(steps):
+
                 # print(f"Check beams step {step}")
                 d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
                 result = self.world_to_map(x, y)
+
                 # If beam reaches outside map, we assume there's a wall beyond the map — that's the max distance
-                # result_outside_map = result is None
-                result_outside_map = False
+                result_outside_map = result is None
+
                 # If beam is inside map, we check if the cost is above the threshold (indicating an obstacle)
                 obstacle_in_map = result and self.map_cost(*result) > self.cost_threshold
                 if result_outside_map or obstacle_in_map:
@@ -139,7 +141,7 @@ class LocalCostmapSubscriber(Node):
         self,
         tf_buffer=None,
         timer_period=0.5,
-        cost_threshold=75,
+        cost_threshold=95,
         target_frame="odom",
         source_frame="base_link",
         create_timer=True,
@@ -253,6 +255,9 @@ class LocalCostmapSubscriber(Node):
             marker_array.markers.append(marker)
 
         self.marker_pub.publish(marker_array)
+
+    def mp(self):
+        print('\n'.join(' '.join(f'{self.costmap[i*self.width + j]:>3}' for j in range(self.width)) for i in reversed(range(self.height))))
 
 
 def main(args=None):
