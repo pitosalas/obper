@@ -95,7 +95,7 @@ class BeamChecker:
             return (i, j)
         else:
             print(
-                f"world to map out of dim: {x:.1f},{y:.1f},{i},{j}, {self.origin_x:0.1f}"
+                f"world to map: x={x:.2f} y={y:.2f} i={i:.2f} j={j:.2f}"
                 f"{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
             )
             return None
@@ -105,18 +105,19 @@ class BeamChecker:
         return self.costmap[idx]
 
     def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths):
+        print(f"====== {angles}")
         if self.costmap is None:
             return [None] * len(angles)
-        step_size = self.resolution / 3.0
-
+        step_size = self.resolution / 2.0
         distances = []
         for angle, _ in zip(angles, widths):
+            print(f"================={step_size} {angle}")
             distance = self.max_scan_range
             global_angle = angle + robot_yaw
             steps = int(self.max_scan_range / step_size)
             for step in range(steps):
                 # print(f"Check beams step {step}")
-                d = step * step_size
+                # d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
                 result = self.world_to_map(x, y)
@@ -125,11 +126,17 @@ class BeamChecker:
                 result_outside_map = result is None
 
                 # If beam is inside map, we check if the cost is above the threshold (indicating an obstacle)
-                obstacle_in_map = (
-                    result and self.map_cost(*result) > self.cost_threshold
-                )
+                result_as_string = "<out>"
+                cost_as_string = "<out>"
+                if result:
+                    obstacle_in_map = self.map_cost(*result) > self.cost_threshold
+                    result_as_string = result
+                    cost_as_string = f"{self.map_cost(*result):<3.0f}"
+                print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
                 if result_outside_map or obstacle_in_map:
-                    distance = d
+                    # distance = d
+                    distance = math.dist((robot_x, robot_y), (x, y))
+                    print(f"Beam measured distance: {d:2.2}")
                     break
             distances.append(distance)
         return distances
