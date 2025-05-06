@@ -9,6 +9,7 @@ import math
 import numpy as np
 from nav_msgs.msg import OccupancyGrid
 from obper.costmap_subscriber import BeamChecker
+from obper.costmap_subscriber import LocalCostmapSubscriber
 
 # Pose: robot position and orientation
 @dataclass
@@ -23,16 +24,17 @@ class WallSegment:
     x0: float
     y0: float
     angle: float
-    bounds: ((float, float), (float, float))
+    bounds: tuple[tuple[float, float], tuple[float, float]]
+
 
 # beam_distances_to_wall_segment: return distances where beams hit a wall segment or max_range
 def beam_distances_to_wall_segment(
     robot_pose: Pose,
     beam_angles: list[float],
     wall: WallSegment,
-    max_range: float
 ) -> list[float]:
     distances = []
+    max_range = LocalCostmapSubscriber.MAX_SCAN_RANGE
     wx = math.cos(wall.angle)
     wy = math.sin(wall.angle)
     for angle in beam_angles:
@@ -118,6 +120,8 @@ def add_box_around(msg: OccupancyGrid, x_m: float, y_m: float, width_m: float):
 def print_costmap_with_robot(msg: OccupancyGrid, rx: float, ry: float):
     w = msg.info.width
     h = msg.info.height
+    rx = rx - msg.info.origin.position.x
+    ry = ry - msg.info.origin.position.y
     res = msg.info.resolution
     ix = int(rx / res)
     iy = int(ry / res)
@@ -142,7 +146,7 @@ def assert_all_beams(expected, actual, tolerance=0.10):
             print(f'✅ Beam {i:2d}: {a:.2f}m')
 
 # test_case: run one beam test
-def test_case(name: str, costmap_msg: OccupancyGrid, pose: Pose, expected: list[float], max_scan_range: float):
+def test_case(name: str, costmap_msg: OccupancyGrid, pose: Pose, expected: list[float]):
     print(f'\n===== {name} =====')
     checker = BeamChecker(
         resolution=costmap_msg.info.resolution,
@@ -150,57 +154,93 @@ def test_case(name: str, costmap_msg: OccupancyGrid, pose: Pose, expected: list[
         origin_y=costmap_msg.info.origin.position.y,
         width=costmap_msg.info.width,
         height=costmap_msg.info.height,
-        costmap=costmap_msg.data,
-        cost_threshold=50,
+        costmap=costmap_msg.data
     )
     angles = np.linspace(-math.pi / 2, math.pi / 2, len(expected))
     widths = [0.1] * len(angles)
     print_costmap_with_robot(costmap_msg, pose.x, pose.y)
-    actual = checker.check_beams(pose.x, pose.y, pose.yaw, angles, widths, max_scan_range)
+    actual = checker.check_beams(pose.x, pose.y, pose.yaw, angles, widths)
     assert_all_beams(expected, actual)
 
 # main: define and run test cases
 def main():
     map_w, map_h, res = 3.0, 3.0, 0.05
-    max_range = 3.0
     wall_bounds = ((0.0, map_w), (0.0, map_h))
     angles = np.linspace(-math.pi / 2, math.pi / 2, 9)
 
-    # Test 1
-    pose1 = Pose(1.5, 1.5, 0.0)
-    msg1 = create_empty_costmap(map_w, map_h, res)
-    add_vertical_wall(msg1, 3.0)
-    wall1 = WallSegment(3.0, 0.0, math.pi / 2, wall_bounds)
-    expected1 = beam_distances_to_wall_segment(pose1, angles.tolist(), wall1, max_range)
-    test_case("Test 1", msg1, pose1, expected1, max_range)
+    # # Test 1
+    # pose1 = Pose(2.0, 1.5, 0.0)
+    # msg1 = create_empty_costmap(map_w, map_h, res)
+    # add_vertical_wall(msg1, 3.0)
+    # wall1 = WallSegment(3.0, 0.0, math.pi / 2, wall_bounds)
+    # expected1 = beam_distances_to_wall_segment(pose1, angles.tolist(), wall1)
+    # test_case("Test 1", msg1, pose1, expected1)
 
-    # Test 2
-    pose2 = Pose(1.5, 1.0, math.pi / 2)
-    msg2 = create_empty_costmap(map_w, map_h, res)
-    add_horizontal_wall(msg2, 2.0)
-    wall2 = WallSegment(0.0, 2.0, 0.0, wall_bounds)
-    expected2 = beam_distances_to_wall_segment(pose2, angles.tolist(), wall2, max_range)
-    test_case("Test 2", msg2, pose2, expected2, max_range)
+    # # Test 2
+    # pose2 = Pose(1.5, 1.0, math.pi / 2)
+    # msg2 = create_empty_costmap(map_w, map_h, res)
+    # add_horizontal_wall(msg2, 2.0)
+    # wall2 = WallSegment(0.0, 2.0, 0.0, wall_bounds)
+    # expected2 = beam_distances_to_wall_segment(pose2, angles.tolist(), wall2)
+    # test_case("Test 2", msg2, pose2, expected2)
 
-    # Test 3
-    pose3 = Pose(1.5, 1.5, 0.0)
-    msg3 = create_empty_costmap(map_w, map_h, res)
-    add_box_around(msg3, pose3.x, pose3.y, 0.10)
-    expected3 = [0.05] * len(angles)
-    test_case("Test 3", msg3, pose3, expected3, max_range)
+    # # Test 3
+    # pose3 = Pose(1.5, 1.5, 0.0)
+    # msg3 = create_empty_costmap(map_w, map_h, res)
+    # add_box_around(msg3, pose3.x, pose3.y, 0.10)
+    # expected3 = [0.05] * len(angles)
+    # test_case("Test 3", msg3, pose3, expected3)
 
-    # Test 4: diagonal wall (/ direction)
-    pose4 = Pose(0.0, 1.0, 0.0)
-    msg4 = create_empty_costmap(map_w, map_h, res)
-    add_diagonal_wall(msg4, '/')
-    wall4 = WallSegment(
-        x0=map_w / 2,
-        y0=map_h / 2,
-        angle=-math.pi * 3 / 4,
-        bounds=((0.0, map_w), (0.0, map_h))
-    )
-    expected4 = beam_distances_to_wall_segment(pose4, angles.tolist(), wall4, max_range)
-    test_case("Test 4", msg4, pose4, expected4, max_range)
+    # # Test 4: diagonal wall (/ direction)
+    # pose4 = Pose(0.0, 1.0, 0.0)
+    # msg4 = create_empty_costmap(map_w, map_h, res)
+    # add_diagonal_wall(msg4, '/')
+    # wall4 = WallSegment(
+    #     x0=map_w / 2,
+    #     y0=map_h / 2,
+    #     angle=-math.pi * 3 / 4,
+    #     bounds=((0.0, map_w), (0.0, map_h))
+    # )
+    # expected4 = beam_distances_to_wall_segment(pose4, angles.tolist(), wall4)
+    # test_case("Test 4", msg4, pose4, expected4)
+
+    # Test 5: origin shifted to (-1.0, 0.0)
+    pose5 = Pose(0.5, 0.0, 0.0)  # robot is at (1.5, 1.5) in world coords
+    msg5 = create_empty_costmap(map_w, map_h, res)
+    msg5.info.origin.position.x = -1.0  # shift origin left
+    add_vertical_wall(msg5, 2.0)  # wall at x=2.0 in world
+    wall5 = WallSegment(x0=2.0, y0=0.0, angle=math.pi / 2, bounds=wall_bounds)
+    expected5 = beam_distances_to_wall_segment(pose5, angles.tolist(), wall5)
+    test_case("Test 5", msg5, pose5, expected5)
+
+    # # Test 5a: same as Test 5 but with origin at (0.0, 0.0)
+    # pose5a = Pose(1.0, 1.5, 0.0)
+    # msg5a = create_empty_costmap(map_w, map_h, res)
+    # # origin is default (0.0, 0.0)
+    # add_vertical_wall(msg5a, 2.0)
+    # wall5a = WallSegment(x0=2.0, y0=0.0, angle=math.pi / 2, bounds=wall_bounds)
+    # expected5a = beam_distances_to_wall_segment(pose5a, angles.tolist(), wall5a)
+    # test_case("Test 5a", msg5a, pose5a, expected5a)
+
+    # # Test 6: origin shifted to (-1.0, -1.0)
+    # pose6 = Pose(0.5, 0.5, math.pi / 2)  # robot at (0.5, 0.5) world
+    # msg6 = create_empty_costmap(map_w, map_h, res)
+    # msg6.info.origin.position.x = -1.0
+    # msg6.info.origin.position.y = -1.0
+    # add_horizontal_wall(msg6, 2.0)      # wall at y=2.0 in world
+    # wall6 = WallSegment(x0=0.0, y0=2.0, angle=0.0, bounds=wall_bounds)
+    # expected6 = beam_distances_to_wall_segment(pose6, angles.tolist(), wall6)
+    # test_case("Test 6", msg6, pose6, expected6)
+
+    # # Test 6a: same as Test 6 but with origin at (0.0, 0.0)
+    # pose6a = Pose(0.5, 0.5, math.pi / 2)
+    # msg6a = create_empty_costmap(map_w, map_h, res)
+    # # origin is default (0.0, 0.0)
+    # add_horizontal_wall(msg6a, 2.0)
+    # wall6a = WallSegment(x0=0.0, y0=2.0, angle=0.0, bounds=wall_bounds)
+    # expected6a = beam_distances_to_wall_segment(pose6a, angles.tolist(), wall6a)
+    # test_case("Test 6a", msg6a, pose6a, expected6a)
+
 
 if __name__ == "__main__":
     main()

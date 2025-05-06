@@ -11,25 +11,25 @@ from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker, MarkerArray
 from robot_msgs.msg import BeamDistances
 from geometry_msgs.msg import Point
-from tf2_ros import (
-    Buffer,
-    TransformListener,
-    LookupException,
-    ConnectivityException,
-    ExtrapolationException,
-)
+import tf2_ros
 import tf_transformations
 import numpy as np
 import math
+from rclpy.time import Time
+from rclpy.duration import Duration
+
 
 # Description:
 # This script implements a ROS 2 node (`LocalCostmapSubscriber`) that subscribes to a local costmap
-# and performs beam analysis to detect obstacles. The costmap is stored as a 1D array in the `BeamChecker`
-# class, which represents the occupancy grid. The map's dimensions (width, height) and resolution are used
+# and performs beam analysis to detect obstacles. The costmap is stored as a 1D array in the
+# `BeamChecker` class, which represents the occupancy grid. The map's dimensions (width, height) and resolution are used
 # to interpret the 1D array as a 2D grid. The node also publishes beam distances and visual markers for
 # visualization in RViz.
 
-# The costmap data is updated in the costmap_callback method of the LocalCostmapSubscriber class, where the msg.data from the OccupancyGrid message is passed to the BeamChecker instance. The BeamChecker uses this data to perform operations like checking beam distances and determining obstacle costs.
+# The costmap data is updated in the costmap_callback method of the LocalCostmapSubscriber class,
+# where the msg.data from the OccupancyGrid message is passed to the BeamChecker instance. T
+# he BeamChecker uses this data to perform operations like checking beam distances
+# and determining obstacle costs.
 
 # The mapping between 2D grid coordinates (i, j) and the 1D array index is done using the formula:
 # idx = j * self.width + i
@@ -51,7 +51,6 @@ class BeamChecker:
         width: int,
         height: int,
         costmap,
-        cost_threshold,
     ) -> None:
         """
         Initialize a CostmapSubscriber instance.
@@ -71,7 +70,8 @@ class BeamChecker:
         self.width = width
         self.height = height
         self.costmap = costmap
-        self.cost_threshold = cost_threshold
+        self.cost_threshold = 95
+        self.max_scan_range = 1.5
 
     def update_data(self, costmap):
         """Fast update of just the occupancy data (assumes dimensions same)."""
@@ -104,18 +104,17 @@ class BeamChecker:
         idx = j * self.width + i
         return self.costmap[idx]
 
-    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths, max_scan_range):
+    def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths):
         if self.costmap is None:
             return [None] * len(angles)
         step_size = self.resolution / 3.0
 
         distances = []
         for angle, _ in zip(angles, widths):
-            distance = max_scan_range
+            distance = self.max_scan_range
             global_angle = angle + robot_yaw
-            steps = int(max_scan_range / step_size)
+            steps = int(self.max_scan_range / step_size)
             for step in range(steps):
-
                 # print(f"Check beams step {step}")
                 d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
@@ -126,7 +125,9 @@ class BeamChecker:
                 result_outside_map = result is None
 
                 # If beam is inside map, we check if the cost is above the threshold (indicating an obstacle)
-                obstacle_in_map = result and self.map_cost(*result) > self.cost_threshold
+                obstacle_in_map = (
+                    result and self.map_cost(*result) > self.cost_threshold
+                )
                 if result_outside_map or obstacle_in_map:
                     distance = d
                     break
@@ -134,14 +135,28 @@ class BeamChecker:
         return distances
 
 
+    def mp(self):
+        print(
+            "\n".join(
+                " ".join(
+                    f"{self.costmap[i * self.width + j]:>3}" for j in range(self.width)
+                )
+                for i in reversed(range(self.height))
+            )
+        )
+
+
+
 class LocalCostmapSubscriber(Node):
     """ROS 2 wrapper node for local costmap subscription and beam analysis."""
+
+    MAX_SCAN_RANGE = 1.5
+    MIN_CRASH_RANGE = 0.5
 
     def __init__(
         self,
         tf_buffer=None,
         timer_period=0.5,
-        cost_threshold=95,
         target_frame="odom",
         source_frame="base_link",
         create_timer=True,
@@ -150,9 +165,8 @@ class LocalCostmapSubscriber(Node):
 
         self.target_frame = target_frame
         self.source_frame = source_frame
-        self.cost_threshold = cost_threshold
-        self.default_max_scan_range = 2.5  # How far to look to find an obstacle
-        self.default_min_crash_distance = 0.5  # just used for color of marker
+        self.default_max_scan_range = LocalCostmapSubscriber.MAX_SCAN_RANGE  # How far to look to find an obstacle
+        self.default_min_crash_distance = LocalCostmapSubscriber.MIN_CRASH_RANGE  # just used for color of marker
         self.default_step_size = None
         self.update_counter = 0
 
@@ -163,8 +177,8 @@ class LocalCostmapSubscriber(Node):
         self.marker_pub = self.create_publisher(MarkerArray, "/beam_markers", 10)
         self.beam_pub = self.create_publisher(BeamDistances, "/beam_distances", 10)
 
-        self.tf_buffer = tf_buffer if tf_buffer else Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
+        self.tf_buffer = tf_buffer if tf_buffer else tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         self.beam_checker = None  # Will be initialized after first costmap
 
@@ -182,27 +196,30 @@ class LocalCostmapSubscriber(Node):
                 width=msg.info.width,
                 height=msg.info.height,
                 costmap=msg.data,
-                cost_threshold=self.cost_threshold,
             )
-            self.get_logger().info(f"Initialized BeamChecker (cb: {self.update_counter}).")
+            self.get_logger().info(
+                f"Initialized BeamChecker (cb: {self.update_counter})."
+            )
         else:
             self.get_logger().info(f"Updated BeamChecker (cb: {self.update_counter})")
             self.beam_checker.update_data(msg.data)
 
     def get_robot_pose(self):
         try:
-            now = rclpy.time.Time()
+            now = Time()
             transform = self.tf_buffer.lookup_transform(
                 self.target_frame,
                 self.source_frame,
                 now,
-                timeout=rclpy.duration.Duration(seconds=0.2),
+                timeout=Duration(seconds=0.2),
             )
             t = transform.transform.translation
             q = transform.transform.rotation
-            roll, pitch, yaw = tf_transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])
+            roll, pitch, yaw = tf_transformations.euler_from_quaternion(
+                [q.x, q.y, q.z, q.w]
+            )
             return t.x, t.y, yaw
-        except (LookupException, ConnectivityException, ExtrapolationException):
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             self.get_logger().warn("TF lookup failed.")
             return None
 
@@ -215,9 +232,7 @@ class LocalCostmapSubscriber(Node):
         x, y, yaw = pose
         angles = np.linspace(-math.pi / 2, math.pi / 2, 9)
         widths = [0.1] * len(angles)
-        distances = self.beam_checker.check_beams(
-            x, y, yaw, angles, widths, max_scan_range=self.default_max_scan_range
-        )
+        distances = self.beam_checker.check_beams(x, y, yaw, angles, widths)
         self.publish_beam_distances(angles, distances)
         self.publish_beam_markers(angles, distances)
 
@@ -235,7 +250,7 @@ class LocalCostmapSubscriber(Node):
 
             marker = Marker()
             marker.header.frame_id = frame_id
-            marker.header.stamp = rclpy.time.Time().to_msg()
+            marker.header.stamp = Time().to_msg()
             marker.ns = "beam_rays"
             marker.id = idx
             marker.type = Marker.ARROW
@@ -255,10 +270,6 @@ class LocalCostmapSubscriber(Node):
             marker_array.markers.append(marker)
 
         self.marker_pub.publish(marker_array)
-
-    def mp(self):
-        print('\n'.join(' '.join(f'{self.costmap[i*self.width + j]:>3}' for j in range(self.width)) for i in reversed(range(self.height))))
-
 
 def main(args=None):
     rclpy.init(args=args)
