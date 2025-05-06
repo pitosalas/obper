@@ -105,19 +105,19 @@ class BeamChecker:
         return self.costmap[idx]
 
     def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths):
-        print(f"====== {angles}")
+        # print(f"====== {angles}")
         if self.costmap is None:
             return [None] * len(angles)
         step_size = self.resolution / 2.0
         distances = []
         for angle, _ in zip(angles, widths):
-            print(f"================={step_size} {angle}")
+            # print(f"================={step_size} {angle}")
             distance = self.max_scan_range
             global_angle = angle + robot_yaw
             steps = int(self.max_scan_range / step_size)
             for step in range(steps):
                 # print(f"Check beams step {step}")
-                # d = step * step_size
+                d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
                 result = self.world_to_map(x, y)
@@ -132,7 +132,7 @@ class BeamChecker:
                     obstacle_in_map = self.map_cost(*result) > self.cost_threshold
                     result_as_string = result
                     cost_as_string = f"{self.map_cost(*result):<3.0f}"
-                print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
+                # print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
                 if result_outside_map or obstacle_in_map:
                     # distance = d
                     distance = math.dist((robot_x, robot_y), (x, y))
