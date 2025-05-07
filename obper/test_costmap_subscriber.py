@@ -26,68 +26,54 @@ class WallSegment:
     angle: float
     bounds: tuple[tuple[float, float], tuple[float, float]]
 
-
-# beam_distances_to_wall_segment: Computes distance from robot to wall segment for each beam.
-def beam_distances_to_wall_segment(
-    robot_pose: Pose,
-    beam_angles: list[float],
-    wall: WallSegment,
-) -> list[float]:
+# beam_distances_to_wall_segment: Computes beam distance to a wall segment (bounded line) with debug prints.
+def beam_distances_to_wall_segment(robot_pose, beam_angles, wall):
     distances = []
-    max_range: float = LocalCostmapSubscriber.MAX_SCAN_RANGE
-    epsilon = 1e-8
+    max_range = LocalCostmapSubscriber.MAX_SCAN_RANGE
+    epsilon = 1e-6
 
-    # Wall direction unit vector
-    wx = math.cos(wall.angle)
-    wy = math.sin(wall.angle)
-    x0, y0 = wall.x0, wall.y0
     (xmin, xmax), (ymin, ymax) = wall.bounds
-    print(f"Beams: robot @{robot_pose.x},{robot_pose.y}")
 
     for angle in beam_angles:
-        # Beam direction in world frame
+        # Part 1: Beam direction in world frame
         theta = robot_pose.yaw + angle
         dx = math.cos(theta)
         dy = math.sin(theta)
+        x0 = robot_pose.x
+        y0 = robot_pose.y
 
-        # Vector from robot to wall start point
-        dx0 = x0 - robot_pose.x
-        dy0 = y0 - robot_pose.y
+        print(f"\nAngle {angle:.2f} rad, direction=({dx:.2f}, {dy:.2f}), origin=({x0:.2f}, {y0:.2f})")
 
-        # Cross product to detect parallelism
-        denom = dx * wy - dy * wx
-        if abs(denom) < epsilon:
-            distances.append(max_range)
-            print(f"angle {theta:1.2}rad, denom {denom:0.3} PARALLEL")
-            continue
+        intersections = []
 
-        # Parametric distance to intersection along beam
-        t = (dx0 * wy - dy0 * wx) / denom
-        x_hit = robot_pose.x + t * dx
-        y_hit = robot_pose.y + t * dy
+        # Part 2: Check vertical intersections (x = xmin/xmax)
+        for x_edge in [xmin, xmax]:
+            if abs(dx) > epsilon:
+                t = (x_edge - x0) / dx
+                y = y0 + t * dy
+                if 0 <= t <= max_range and ymin <= y <= ymax:
+                    intersections.append(t)
+                    print(f"  ↪ Intersects vertical x={x_edge:.2f} at t={t:.3f}, y={y:.2f}")
 
-        print(f"angle {theta:1.2}rad, xsect={x_hit:2.2f},{y_hit:2.2f} t={t:0.3} denom={denom:0.3}")
- 
-        if 0 <= t <= max_range and xmin <= x_hit <= xmax and ymin <= y_hit <= ymax:
-            distances.append(t)
+        # Part 3: Check horizontal intersections (y = ymin/ymax)
+        for y_edge in [ymin, ymax]:
+            if abs(dy) > epsilon:
+                t = (y_edge - y0) / dy
+                x = x0 + t * dx
+                if 0 <= t <= max_range and xmin <= x <= xmax:
+                    intersections.append(t)
+                    print(f"  ↪ Intersects horizontal y={y_edge:.2f} at t={t:.3f}, x={x:.2f}")
+
+        # Part 4: Select closest valid intersection or max range
+        if intersections:
+            t_min = min(intersections)
+            print(f"  ↪ Closest intersection at t={t_min:.3f}")
+            distances.append(t_min)
         else:
-            # Project beam to the 4 corners of the bounding box, return nearest intersection
-            corners = [
-                (xmin, ymin),
-                (xmax, ymin),
-                (xmax, ymax),
-                (xmin, ymax),
-            ]
-            valid_ts = []
-            for cx, cy in corners:
-                vx = cx - robot_pose.x
-                vy = cy - robot_pose.y
-                projected_t = vx * dx + vy * dy
-                if 0 <= projected_t <= max_range:
-                    valid_ts.append(projected_t)
-            distances.append(min(valid_ts) if valid_ts else max_range)
-    return distances
+            print(f"  ↪ No intersection in bounds. Using max range {max_range}")
+            distances.append(max_range)
 
+    return distances
 # create_empty_costmap: return free costmap grid
 def create_empty_costmap(width_m: float, height_m: float, resolution: float) -> OccupancyGrid:
     width = int(width_m / resolution)
@@ -236,10 +222,10 @@ def main():
     # test_case("Test 4", msg4, pose4, expected4)
 
     # Test 5: origin shifted to (-1.0, 0.0)
-    pose5 = Pose(0.5, 0.0, 0.0)  # robot is at (1.5, 1.5) in world coords
+    pose5 = Pose(0.5, 0.5, 0.0)  # robot is at (1.5, 1.5) in world coords
     msg5 = create_empty_costmap(map_w, map_h, res)
     msg5.info.origin.position.x = -1.0  # shift origin left
-    add_vertical_wall(msg5, 2.0)  # wall at x=2.0 in world
+    add_vertical_wall(msg5, 1.5)  # wall at x=1.5 in world
     wall5 = WallSegment(x0=2.0, y0=0.0, angle=math.pi / 2, bounds=wall_bounds)
     expected5 = beam_distances_to_wall_segment(pose5, angles.tolist(), wall5)
     test_case("Test 5", msg5, pose5, expected5)

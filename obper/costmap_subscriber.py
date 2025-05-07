@@ -105,18 +105,18 @@ class BeamChecker:
         return self.costmap[idx]
 
     def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths):
-        # print(f"====== {angles}")
+#        print(f"====== anglestocheck={angles} x={robot_x:0.2} y={robot_y:0.2} yaw={robot_yaw:0.2}")
         if self.costmap is None:
             return [None] * len(angles)
         step_size = self.resolution / 2.0
         distances = []
         for angle, _ in zip(angles, widths):
-            # print(f"================={step_size} {angle}")
+#            print(f"=================stepsize={step_size} angle={angle:1.2}")
             distance = self.max_scan_range
             global_angle = angle + robot_yaw
             steps = int(self.max_scan_range / step_size)
             for step in range(steps):
-                # print(f"Check beams step {step}")
+#                print(f"Check beams step {step}")
                 d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
@@ -132,15 +132,15 @@ class BeamChecker:
                     obstacle_in_map = self.map_cost(*result) > self.cost_threshold
                     result_as_string = result
                     cost_as_string = f"{self.map_cost(*result):<3.0f}"
-                # print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
+#                print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
                 if result_outside_map or obstacle_in_map:
                     # distance = d
                     distance = math.dist((robot_x, robot_y), (x, y))
-                    print(f"Beam measured distance: {d:2.2}")
+                    # print(f"Beam measured distance: {d:2.2}")
                     break
             distances.append(distance)
+        # print("Exiting check_beams")
         return distances
-
 
     def mp(self):
         print(
@@ -153,7 +153,6 @@ class BeamChecker:
         )
 
 
-
 class LocalCostmapSubscriber(Node):
     """ROS 2 wrapper node for local costmap subscription and beam analysis."""
 
@@ -163,7 +162,7 @@ class LocalCostmapSubscriber(Node):
     def __init__(
         self,
         tf_buffer=None,
-        timer_period=0.5,
+        timer_period=0.05,
         target_frame="odom",
         source_frame="base_link",
         create_timer=True,
@@ -195,6 +194,7 @@ class LocalCostmapSubscriber(Node):
 
     def costmap_callback(self, msg):
         self.update_counter += 1
+        #print(f"Map Callback: res={msg.info.resolution:0.1} org: x={msg.info.origin.position.x:0.2} y={msg.info.origin.position.y:0.2}")
         if self.beam_checker is None:
             self.beam_checker = BeamChecker(
                 resolution=msg.info.resolution,
@@ -225,6 +225,7 @@ class LocalCostmapSubscriber(Node):
             roll, pitch, yaw = tf_transformations.euler_from_quaternion(
                 [q.x, q.y, q.z, q.w]
             )
+#            print(f"Odom: {t.x:0.2} {t.y:0.2} {yaw:0.2}")
             return t.x, t.y, yaw
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             self.get_logger().warn("TF lookup failed.")
@@ -242,6 +243,7 @@ class LocalCostmapSubscriber(Node):
         distances = self.beam_checker.check_beams(x, y, yaw, angles, widths)
         self.publish_beam_distances(angles, distances)
         self.publish_beam_markers(angles, distances)
+#        print(f" angles:<{','.join(f'{x:.2f}' for x in angles)}> distances:<{','.join(f'{x:.2f}' for x in distances)}>")
 
     def publish_beam_distances(self, angles, distances):
         msg = BeamDistances()
