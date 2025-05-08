@@ -72,6 +72,7 @@ class BeamChecker:
         self.costmap = costmap
         self.cost_threshold = 95
         self.max_scan_range = 1.5
+        self.verbose:bool = False
 
     def update_data(self, costmap):
         """Fast update of just the occupancy data (assumes dimensions same)."""
@@ -94,10 +95,11 @@ class BeamChecker:
         if 0 <= i < self.width and 0 <= j < self.height:
             return (i, j)
         else:
-            print(
-                f"world to map: x={x:.2f} y={y:.2f} i={i:.2f} j={j:.2f}"
-                f"{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
-            )
+            if self.verbose:
+                print(
+                    iff"world to map: x={x:.2f} y={y:.2f} i={i:.2f} j={j:.2f}"
+                    f"{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
+                )
             return None
 
     def map_cost(self, i, j):
@@ -105,18 +107,21 @@ class BeamChecker:
         return self.costmap[idx]
 
     def check_beams(self, robot_x, robot_y, robot_yaw, angles, widths):
-#        print(f"====== anglestocheck={angles} x={robot_x:0.2} y={robot_y:0.2} yaw={robot_yaw:0.2}")
+        if self.verbose:
+            print(f"====== anglestocheck={angles} x={robot_x:0.2} y={robot_y:0.2} yaw={robot_yaw:0.2}")
         if self.costmap is None:
             return [None] * len(angles)
         step_size = self.resolution / 2.0
         distances = []
         for angle, _ in zip(angles, widths):
-#            print(f"=================stepsize={step_size} angle={angle:1.2}")
+            if self.verbose:
+                print(f"=================stepsize={step_size} angle={angle:1.2}")
             distance = self.max_scan_range
             global_angle = angle + robot_yaw
             steps = int(self.max_scan_range / step_size)
             for step in range(steps):
-#                print(f"Check beams step {step}")
+                if self.verbose:
+                    print(f"Check beams step {step}")
                 d = step * step_size
                 x = robot_x + d * math.cos(global_angle)
                 y = robot_y + d * math.sin(global_angle)
@@ -132,17 +137,21 @@ class BeamChecker:
                     obstacle_in_map = self.map_cost(*result) > self.cost_threshold
                     result_as_string = result
                     cost_as_string = f"{self.map_cost(*result):<3.0f}"
-#                print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
+                if self.verbose:
+                    print(f"{step:<4}{d:>4.2f}  {x:>4.1f},{y:>4.1f}, {global_angle:3.1f}°  {result_as_string}->{cost_as_string}")
                 if result_outside_map or obstacle_in_map:
                     # distance = d
                     distance = math.dist((robot_x, robot_y), (x, y))
-                    # print(f"Beam measured distance: {d:2.2}")
+                    if self.verbose:
+                        print(f"Beam measured distance: {distance:2.2}")
                     break
             distances.append(distance)
-        # print("Exiting check_beams")
+        if self.verbose:
+            print("Exiting check_beams")
+            self.mp()
         return distances
 
-    def mp(self):
+    def mpold(self):
         print(
             "\n".join(
                 " ".join(
@@ -151,7 +160,13 @@ class BeamChecker:
                 for i in reversed(range(self.height))
             )
         )
-
+    def mp(self):
+        # Column header
+        header = "    " + " ".join(f"{j:>3}" for j in range(self.width))
+        print(header)
+        for i in reversed(range(self.height)):
+            row = " ".join(f"{self.costmap[i * self.width + j]:>3}" for j in range(self.width))
+            print(f"{i:>3}:" + " " + row)
 
 class LocalCostmapSubscriber(Node):
     """ROS 2 wrapper node for local costmap subscription and beam analysis."""
