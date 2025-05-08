@@ -74,7 +74,7 @@ class Explore2(Node):
         self.current_beams = list(zip(msg.angles, msg.distances))
         if self.current_state == 'IDLE' and self.current_beams:
             self.select_new_goal('Get out of IDLE')
-        elif self.current_state == 'DRIV' and any(d < 0.4 for _, d in self.current_beams[3:6]):
+        elif self.current_state == 'DRIV' and any(d < 0.5 for _, d in self.current_beams[3:6]):
             self.select_new_goal('Obstacle detected')
 
     def select_new_goal(self, reason: str):

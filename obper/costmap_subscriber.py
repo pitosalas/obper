@@ -97,7 +97,7 @@ class BeamChecker:
         else:
             if self.verbose:
                 print(
-                    iff"world to map: x={x:.2f} y={y:.2f} i={i:.2f} j={j:.2f}"
+                    f"world to map: x={x:.2f} y={y:.2f} i={i:.2f} j={j:.2f}"
                     f"{self.origin_y:0.1f} [cond1: {0 <= i < self.width} cond2: {0 <= j < self.height}]"
                 )
             return None
@@ -177,7 +177,7 @@ class LocalCostmapSubscriber(Node):
     def __init__(
         self,
         tf_buffer=None,
-        timer_period=0.05,
+        timer_period=0.25,
         target_frame="odom",
         source_frame="base_link",
         create_timer=True,
@@ -210,21 +210,22 @@ class LocalCostmapSubscriber(Node):
     def costmap_callback(self, msg):
         self.update_counter += 1
         #print(f"Map Callback: res={msg.info.resolution:0.1} org: x={msg.info.origin.position.x:0.2} y={msg.info.origin.position.y:0.2}")
-        if self.beam_checker is None:
-            self.beam_checker = BeamChecker(
-                resolution=msg.info.resolution,
-                origin_x=msg.info.origin.position.x,
-                origin_y=msg.info.origin.position.y,
-                width=msg.info.width,
-                height=msg.info.height,
-                costmap=msg.data,
-            )
-            self.get_logger().info(
-                f"Initialized BeamChecker (cb: {self.update_counter})."
-            )
-        else:
-            self.get_logger().info(f"Updated BeamChecker (cb: {self.update_counter})")
-            self.beam_checker.update_data(msg.data)
+        # if self.beam_checker is None:
+        self.beam_checker = BeamChecker(
+            resolution=msg.info.resolution,
+            origin_x=msg.info.origin.position.x,
+            origin_y=msg.info.origin.position.y,
+            width=msg.info.width,
+            height=msg.info.height,
+            costmap=msg.data,
+        )
+        self.get_logger().info(
+            f"Costmap Callback: (cb: {self.update_counter})."
+        )
+        # else:
+        #     self.get_logger().info(f"Updated BeamChecker (cb: {self.update_counter})")
+
+        #     self.beam_checker.update_data(msg.data)
 
     def get_robot_pose(self):
         try:
