@@ -24,31 +24,36 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from robot_msgs.msg import BeamDistances
+import tf_transformations
 from visualization_msgs.msg import Marker
 from tf2_ros import Buffer, TransformListener
 from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
-import tf_transformations
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Point
+from costmap_subscriber import LocalCostmapSubscriber
 import numpy as np
 import math
 
 
 class Explore2(Node):
     def __init__(self):
-        super().__init__('ex2')
+        super().__init__("ex2")
 
         # Parameters
-        self.grid_resolution = 0.25
-        self.grid_size = 100
-        self.linear_speed = 0.3
-        self.angular_speed = 1.5
-        self.goal_tolerance = 0.3
+        self.grid_resolution = 0.25                     # Occupancy Grid resolution
+        self.grid_size = 100                            # Edge of square
+        self.linear_speed = 0.3                         # Default linear speed to use when exploring
+        self.angular_speed = 1.5                        # And anular speed
+        self.goal_tolerance = 0.3                       # Distance from goal to consider to have arived
+        self.min_crash_range = LocalCostmapSubscriber.MIN_CRASH_RANGE # Min distance to obstacle permitted
+        self.start_crash_beam = 3                       # Beams used to consider impending crash
+        self.end_crash_beam = 5                         # ..
+        self.verbose = False                            # Dynamic turn on and of of verbose logging.
 
         # State
         self.visited_map = np.zeros((self.grid_size, self.grid_size), dtype=np.uint8)
-        self.set_state('IDLE')
+        self.set_state("IDLE")
         self.goal_point: Point | None = None
         self.current_beams = []
         self.loop_count = 0
@@ -58,24 +63,24 @@ class Explore2(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
         # ROS interfaces
-        self.beam_sub = self.create_subscription(
-            BeamDistances, '/beam_distances', self.beam_callback, 10
-        )
-        self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.occ_marker = self.create_publisher(Marker, '/occupancy', 10)
-        self.goal_marker = self.create_publisher(Marker, '/goal', 10)
+        self.beam_sub = self.create_subscription(BeamDistances, "/beam_distances", self.beam_callback, 10)
+        self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.occ_marker = self.create_publisher(Marker, "/occupancy", 10)
+        self.goal_marker = self.create_publisher(Marker, "/goal", 10)
 
         self.timer = self.create_timer(0.2, self.control_loop)  # 5 Hz
         self.cmd_timer = self.create_timer(0.05, self.publish_current_twist)  # 20 Hz
         self.current_twist = Twist()
 
     def beam_callback(self, msg):
-        self.get_logger().debug(f'State: {self.current_state}')
+        self.get_logger().debug(f"State: {self.current_state}")
         self.current_beams = list(zip(msg.angles, msg.distances))
-        if self.current_state == 'IDLE' and self.current_beams:
-            self.select_new_goal('Get out of IDLE')
-        elif self.current_state == 'DRIV' and any(d < 0.5 for _, d in self.current_beams[3:6]):
-            self.select_new_goal('Obstacle detected')
+        if self.current_state == "IDLE" and self.current_beams:
+            self.select_new_goal("Get out of IDLE")
+        elif self.current_state == "DRIV" and any(
+            d < self.min_crash_range for _, d in self.current_beams[self.start_crash_beam : self.end_crash_beam + 1]
+        ):
+            self.select_new_goal("Obstacle detected")
 
     def select_new_goal(self, reason: str):
         best_angle, best_distance = max(self.current_beams, key=lambda x: x[1])
@@ -89,33 +94,32 @@ class Explore2(Node):
         y = pose.y + best_distance * math.sin(tot_angle)
 
         self.goal_point = Point(x=x, y=y)
-        self.set_state('TURN')
-        self.log_loop_data(state='GLUP', pose=None)
+        self.set_state("TURN")
+        self.log_loop_data(state="GLUP", pose=None)
         self.set_current_twist(0.0, 0.0)  # Stop before turning
 
     def set_state(self, state):
-        if state not in ['IDLE', 'TURN', 'DRIV']:
-            self.get_logger().debug(f'Invalid state: {state}')
+        if state not in ["IDLE", "TURN", "DRIV"]:
+            self.get_logger().debug(f"Invalid state: {state}")
             return
         self.current_state = state
-        self.get_logger().debug(f'State changed to: {self.current_state}')
+        self.get_logger().debug(f"State changed to: {self.current_state}")
 
     def get_robot_pose(self) -> Point | None:
         try:
             now = rclpy.time.Time()
-            trans = self.tf_buffer.lookup_transform('odom', 'base_link', now)
+            trans = self.tf_buffer.lookup_transform("odom", "base_link", now)
             t = trans.transform.translation
             q = trans.transform.rotation
             roll, pitch, yaw = tf_transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])
             return Point(x=t.x, y=t.y, z=yaw)
         except (LookupException, ConnectivityException, ExtrapolationException) as e:
-            self.get_logger().debug(f'TF lookup failed: {type(e).__name__}')
+            self.get_logger().debug(f"TF lookup failed: {type(e).__name__}")
             return None
 
     def set_current_twist(self, linear_x, angular_z):
         self.current_twist.linear.x = linear_x
         self.current_twist.angular.z = angular_z
-        self.get_logger().debug(f'Set cmd_vel: linear.x={linear_x:.2f}, angular.z={angular_z:.2f}')
 
     def publish_current_twist(self):
         # pass
@@ -131,25 +135,22 @@ class Explore2(Node):
         self.publish_visited_cells()
         self.publish_goal_marker()
 
-        if self.current_state == 'TURN':
+        if self.current_state == "TURN":
             angle_to_goal = math.atan2(self.goal_point.y - pose.y, self.goal_point.x - pose.x)
             angle_diff = self.normalize_angle(angle_to_goal - pose.z)
-            # self.get_logger().info(
-            #     f"To goal: {math.degrees(angle_to_goal):4.1f}°, diff: {math.degrees(angle_diff):4.1f}°"
-            # )
             if abs(angle_diff) < 0.1:
-                self.set_state('DRIV')
+                self.set_state("DRIV")
                 self.set_current_twist(0.0, 0.0)
             else:
                 self.set_current_twist(0.0, self.angular_speed * np.sign(angle_diff))
 
-        elif self.current_state == 'DRIV':
+        elif self.current_state == "DRIV":
             dx = self.goal_point.x - pose.x
             dy = self.goal_point.y - pose.y
             dist = math.hypot(dx, dy)
             if dist < self.goal_tolerance:
                 self.set_current_twist(0.0, 0.0)
-                self.set_state('IDLE')
+                self.set_state("IDLE")
             else:
                 angle_to_goal = math.atan2(dy, dx)
                 angle_diff = self.normalize_angle(angle_to_goal - pose.y)
@@ -160,7 +161,7 @@ class Explore2(Node):
     def log_loop_data(self, pose=None, state=None):
         if (self.loop_count % 10) == 0:
             pass  # For debugging, can be removed later
-        minf = float('-inf')
+        minf = float("-inf")
         lx = self.current_twist.linear.x
         az = self.current_twist.angular.z
         pose = pose or self.get_robot_pose()
@@ -170,22 +171,21 @@ class Explore2(Node):
             px, py = minf, minf
         goal = self.goal_point or Point(x=minf, y=minf)
         gx, gy = goal.x, goal.y
-        current_beam_as_str = 'N/A'
+        current_beam_as_str = "N/A"
         if self.current_beams:
             cb = self.current_beams
-            current_beam_as_str = ' '.join(
-                f'<<{cb[i][1]:4.1f}>>' if i == 4 else f'{cb[i][1]:4.1f}' for i in range(9)
-            )
+            current_beam_as_str = " ".join(f"<<{cb[i][1]:4.1f}>>" if i == 4 else f"{cb[i][1]:4.1f}" for i in range(9))
         dist = math.hypot(gx - px, gy - py) if self.goal_point else minf
         if state is None:
             state = self.current_state
-        self.get_logger().info(
-            f'{self.loop_count:3d},{state},{lx:4.1f},{az:4.1f}, {px:.2f},{py:.2f},{gx:4.1f},{gy:4.1f},{dist:4.1f},[{current_beam_as_str}]'
-        )
+        if self.verbose:
+            self.get_logger().info(
+                f"{self.loop_count:3d},{state},{lx:4.1f},{az:4.1f}, {px:.2f},{py:.2f},{gx:4.1f},{gy:4.1f},{dist:4.1f},[{current_beam_as_str}]"
+            )
 
     def create_marker(self, ns, marker_id, marker_type, color: ColorRGBA, scale: Vector3):
         marker = Marker()
-        marker.header.frame_id = 'odom'
+        marker.header.frame_id = "odom"
         marker.header.stamp = self.get_clock().now().to_msg()
         marker.ns = ns
         marker.id = marker_id
@@ -203,29 +203,30 @@ class Explore2(Node):
 
     def publish_visited_cells(self):
         marker = self.create_marker(
-            'visited',
-            0,
+            "occupied",
+            1,
             Marker.CUBE_LIST,
-            ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
-            Vector3(x=self.grid_resolution, y=self.grid_resolution, z=0.1),
+            ColorRGBA(r=0.5, g=0.5, b=0.0, a=1.0),
+            Vector3(x=0.1, y=0.1, z=0.1)
         )
+        points: list[Point] = []
 
-        # for j in range(self.grid_size):
-        #     for i in range(self.grid_size):
-        #         if self.visited_map[j, i]:
-        #             pt = Point()
-        #             pt.x = (i - self.grid_size / 2) * self.grid_resolution
-        #             pt.y = (j - self.grid_size / 2) * self.grid_resolution
-        #             pt.z = 0.01
-        #             marker.points.append(pt)
-
-        # marker_array.markers.append(marker)
+        for j in range(self.grid_size):
+            for i in range(self.grid_size):
+                if self.visited_map[j, i]:
+                    pt = Point()
+                    pt.x = (i - self.grid_size / 2) * self.grid_resolution
+                    pt.y = (j - self.grid_size / 2) * self.grid_resolution
+                    pt.z = 0.01
+                    points.append(pt)
+        marker.points = points
+        self.occ_marker.publish(marker)
 
     def publish_goal_marker(self):
         if self.goal_point is None:
             return
         marker = self.create_marker(
-            'goal',
+            "goal",
             1,
             Marker.SPHERE,
             ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
@@ -253,5 +254,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
