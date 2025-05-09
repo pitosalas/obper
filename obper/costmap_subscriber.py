@@ -11,6 +11,7 @@ from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker, MarkerArray
 from robot_msgs.msg import BeamDistances
 from geometry_msgs.msg import Point
+from tf2_py import TransformException
 import tf2_ros
 import tf_transformations
 import numpy as np
@@ -243,7 +244,7 @@ class LocalCostmapSubscriber(Node):
             )
 #            print(f"Odom: {t.x:0.2} {t.y:0.2} {yaw:0.2}")
             return t.x, t.y, yaw
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+        except (TransformException):
             self.get_logger().warn("TF lookup failed.")
             return None
 

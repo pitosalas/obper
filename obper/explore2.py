@@ -11,13 +11,6 @@ Purpose:
     in a purposeful and intelligent manner. It selects the farthest visible direction as a waypoint,
     rotates toward it, and drives forward until it reaches the goal or detects a new obstacle.
     The behavior is governed by a finite state machine.
-
-Key Features:
-    - State Machine: IDLE, TURN, DRIV
-    - Goal Selection: Pick farthest visible beam
-    - Visited Map: 2D grid in odom frame
-    - Markers: Visited cells + goal point
-    - CSV-style logging for each control loop
 """
 
 import rclpy
@@ -27,7 +20,7 @@ from robot_msgs.msg import BeamDistances
 import tf_transformations
 from visualization_msgs.msg import Marker
 from tf2_ros import Buffer, TransformListener
-from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
+from tf2_ros import TransformException
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Point
@@ -41,15 +34,15 @@ class Explore2(Node):
         super().__init__("ex2")
 
         # Parameters
-        self.grid_resolution = 0.25                     # Occupancy Grid resolution
-        self.grid_size = 100                            # Edge of square
-        self.linear_speed = 0.3                         # Default linear speed to use when exploring
-        self.angular_speed = 1.5                        # And anular speed
-        self.goal_tolerance = 0.3                       # Distance from goal to consider to have arived
-        self.min_crash_range = LocalCostmapSubscriber.MIN_CRASH_RANGE # Min distance to obstacle permitted
-        self.start_crash_beam = 3                       # Beams used to consider impending crash
-        self.end_crash_beam = 5                         # ..
-        self.verbose = False                            # Dynamic turn on and of of verbose logging.
+        self.grid_resolution  = 0.25                                    # Occupancy Grid resolution
+        self.grid_size        = 100                                     # Edge of square
+        self.linear_speed     = 0.3                                     # Default linear speed to use when exploring
+        self.angular_speed    = 1.5                                     # And anular speed
+        self.goal_tolerance   = 0.3                                     # Distance from goal to consider to have arived
+        self.min_crash_range  = LocalCostmapSubscriber.MIN_CRASH_RANGE  # Min distance to obstacle permitted
+        self.start_crash_beam = 3                                       # Beams used to consider impending crash
+        self.end_crash_beam   = 5                                       # ..
+        self.verbose          = False                                   # Dynamic turn on and of of
 
         # State
         self.visited_map = np.zeros((self.grid_size, self.grid_size), dtype=np.uint8)
@@ -113,7 +106,7 @@ class Explore2(Node):
             q = trans.transform.rotation
             roll, pitch, yaw = tf_transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])
             return Point(x=t.x, y=t.y, z=yaw)
-        except (LookupException, ConnectivityException, ExtrapolationException) as e:
+        except (TransformException) as e:
             self.get_logger().debug(f"TF lookup failed: {type(e).__name__}")
             return None
 
@@ -153,7 +146,7 @@ class Explore2(Node):
                 self.set_state("IDLE")
             else:
                 angle_to_goal = math.atan2(dy, dx)
-                angle_diff = self.normalize_angle(angle_to_goal - pose.y)
+                angle_diff = self.normalize_angle(angle_to_goal - pose.z)
                 ang_z = np.clip(self.angular_speed * angle_diff, -0.5, 0.5)
                 self.set_current_twist(self.linear_speed, 0.0)
         self.log_loop_data()
@@ -180,7 +173,8 @@ class Explore2(Node):
             state = self.current_state
         if self.verbose:
             self.get_logger().info(
-                f"{self.loop_count:3d},{state},{lx:4.1f},{az:4.1f}, {px:.2f},{py:.2f},{gx:4.1f},{gy:4.1f},{dist:4.1f},[{current_beam_as_str}]"
+                f"{self.loop_count:3d},{state},{lx:4.1f},{az:4.1f},"
+                f"{px:.2f},{py:.2f},{gx:4.1f},{gy:4.1f},{dist:4.1f},[{current_beam_as_str}]"
             )
 
     def create_marker(self, ns, marker_id, marker_type, color: ColorRGBA, scale: Vector3):
@@ -252,7 +246,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()
