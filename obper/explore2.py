@@ -24,7 +24,7 @@ from tf2_ros import TransformException
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Point
-from costmap_subscriber import LocalCostmapSubscriber
+from obper.costmap_subscriber import LocalCostmapSubscriber
 import numpy as np
 import math
 
@@ -42,7 +42,7 @@ class Explore2(Node):
         self.min_crash_range  = LocalCostmapSubscriber.MIN_CRASH_RANGE  # Min distance to obstacle permitted
         self.start_crash_beam = 3                                       # Beams used to consider impending crash
         self.end_crash_beam   = 5                                       # ..
-        self.verbose          = False                                   # Dynamic turn on and of of
+        self.verbose          = True                                   # Dynamic turn on and of of
 
         # State
         self.visited_map = np.zeros((self.grid_size, self.grid_size), dtype=np.uint8)
